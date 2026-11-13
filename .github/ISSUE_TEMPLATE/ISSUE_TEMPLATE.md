@@ -1,8 +1,7 @@
 ---
-name: "✨Feature Template"
+name: "Feature Template"
 about: 기능관련 이슈
-title: "[✨Feature] 기능 설명"
-labels: "✨ feat"
+title: "[Feat] 기능 설명"
 assignees: ''
 
 ---
