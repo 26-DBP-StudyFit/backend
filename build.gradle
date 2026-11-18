@@ -25,6 +25,7 @@ dependencies {
 	testCompileOnly 'org.projectlombok:lombok'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	testAnnotationProcessor 'org.projectlombok:lombok'
+	implementation 'org.apache.commons:commons-dbcp2:2.14.0'
 }
 
 tasks.named('test') {
