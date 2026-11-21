@@ -10,8 +10,8 @@ public class UserDAO {
 
     public int create(User user) {
         /* 회원 저장 (회원가입)
-         * 시퀀스 seq_member로 새 회원번호를 얻은 후 MEMBER 테이블에 INSERT함.
-         * 생성된 회원번호를 반환함 (실패 시 -1을 반환)
+         시퀀스 seq_member로 새 회원번호를 얻은 후 MEMBER 테이블에 INSERT함.
+         생성된 회원번호를 반환함 (실패 시 -1을 반환)
          */
         int newId = -1;
 
