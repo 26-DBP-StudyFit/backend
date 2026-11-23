@@ -1,4 +1,9 @@
-package com.DBP.StudyFit;
+package com.DBP.StudyFit.dao;
+
+import com.DBP.StudyFit.JDBCUtil;
+import com.DBP.StudyFit.domain.RegionCode;
+import com.DBP.StudyFit.domain.Study_Category;
+import com.DBP.StudyFit.domain.Team;
 
 import java.sql.*;
 import java.time.DayOfWeek;

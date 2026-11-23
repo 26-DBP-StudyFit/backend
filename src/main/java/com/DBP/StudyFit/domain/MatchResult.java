@@ -1,4 +1,4 @@
-package com.DBP.StudyFit.recommendation.domain;
+package com.DBP.StudyFit.domain;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

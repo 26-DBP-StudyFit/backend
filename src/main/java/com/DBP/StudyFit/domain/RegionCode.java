@@ -1,4 +1,4 @@
-package com.DBP.StudyFit;
+package com.DBP.StudyFit.domain;
 
 public enum RegionCode {
     SEOUL("서울특별시"),

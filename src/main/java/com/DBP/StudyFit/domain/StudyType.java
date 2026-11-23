@@ -1,4 +1,4 @@
-package com.DBP.StudyFit;
+package com.DBP.StudyFit.domain;
 
 import java.util.HashMap;
 import java.util.Map;

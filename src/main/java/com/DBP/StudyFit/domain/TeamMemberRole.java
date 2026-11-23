@@ -1,4 +1,4 @@
-package com.DBP.StudyFit.TeamMember;
+package com.DBP.StudyFit.domain;
 
 /**
  * team_member.role 컬럼 값.
