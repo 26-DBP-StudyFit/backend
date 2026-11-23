@@ -5,49 +5,42 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 public class Team {
-    private int team_id;
+    private int teamId;
     private String title;
-    private RegionCode region_code;
-    private Study_Category study_category;
-    private int recruit_count;
-    private DayOfWeek studyDays;
-    private LocalTime preferred_start_time;
-    private LocalTime preferred_end_time;
-    private LocalDateTime created_at;
-
-    // 생성자
-
-
-    public Team(int team_id, String title, RegionCode region_code,
-                Study_Category study_category, int recruit_count,
-                DayOfWeek studyDays,
-                LocalTime preferred_start_time, LocalTime preferred_end_time,
-                LocalDateTime created_at) {
-        this.team_id = team_id;
-        this.title = title;
-        this.region_code = region_code;
-        this.study_category = study_category;
-        this.recruit_count = recruit_count;
-        this.studyDays = studyDays;
-        this.preferred_start_time = preferred_start_time;
-        this.preferred_end_time = preferred_end_time;
-        this.created_at = created_at;
-    }
-
-    public Team() {
-
-    }
+    private RegionCode regionCode;
+    private Study_Category studyCategory;
+    private int recruitCount;
+    private DayOfWeek studyDay;
+    private LocalTime preferredStartTime;
+    private LocalTime preferredEndTime;
+    private LocalDateTime createdAt;
 
     // 기본 생성자
-
-
-    // Getter 및 Setter
-    public int getTeam_id() {
-        return team_id;
+    public Team() {
     }
 
-    public void setTeam_id(int team_id) {
-        this.team_id = team_id;
+    // 전체 필드를 받는 생성자
+    public Team(int teamId, String title, RegionCode regionCode,
+                Study_Category studyCategory, int recruitCount,
+                DayOfWeek studyDay, LocalTime preferredStartTime,
+                LocalTime preferredEndTime, LocalDateTime createdAt) {
+        this.teamId = teamId;
+        this.title = title;
+        this.regionCode = regionCode;
+        this.studyCategory = studyCategory;
+        this.recruitCount = recruitCount;
+        this.studyDay = studyDay;
+        this.preferredStartTime = preferredStartTime;
+        this.preferredEndTime = preferredEndTime;
+        this.createdAt = createdAt;
+    }
+
+    public int getTeamId() {
+        return teamId;
+    }
+
+    public void setTeamId(int teamId) {
+        this.teamId = teamId;
     }
 
     public String getTitle() {
@@ -58,59 +51,59 @@ public class Team {
         this.title = title;
     }
 
-    public RegionCode getRegion_code() {
-        return region_code;
+    public RegionCode getRegionCode() {
+        return regionCode;
     }
 
-    public void setRegion_code(RegionCode regiond_code) {
-        this.region_code = regiond_code;
+    public void setRegionCode(RegionCode regionCode) {
+        this.regionCode = regionCode;
     }
 
-    public Study_Category getStudy_category() {
-        return study_category;
+    public Study_Category getStudyCategory() {
+        return studyCategory;
     }
 
-    public void setStudy_category(Study_Category study_category) {
-        this.study_category = study_category;
+    public void setStudyCategory(Study_Category studyCategory) {
+        this.studyCategory = studyCategory;
     }
 
-    public int getRecruit_count() {
-        return recruit_count;
+    public int getRecruitCount() {
+        return recruitCount;
     }
 
-    public void setRecruit_count(int recruit_count) {
-        this.recruit_count = recruit_count;
+    public void setRecruitCount(int recruitCount) {
+        this.recruitCount = recruitCount;
     }
 
-    public DayOfWeek getStudyDays() {
-        return studyDays;
+    public DayOfWeek getStudyDay() {
+        return studyDay;
     }
 
-    public void setStudyDays(DayOfWeek studyDays) {
-        this.studyDays = studyDays;
+    public void setStudyDay(DayOfWeek studyDay) {
+        this.studyDay = studyDay;
     }
 
-    public LocalTime getPreferred_start_time() {
-        return preferred_start_time;
+    public LocalTime getPreferredStartTime() {
+        return preferredStartTime;
     }
 
-    public void setPreferred_start_time(LocalTime preferred_start_time) {
-        this.preferred_start_time = preferred_start_time;
+    public void setPreferredStartTime(LocalTime preferredStartTime) {
+        this.preferredStartTime = preferredStartTime;
     }
 
-    public LocalTime getPreferred_end_time() {
-        return preferred_end_time;
+    public LocalTime getPreferredEndTime() {
+        return preferredEndTime;
     }
 
-    public void setPreferred_end_time(LocalTime preferred_end_time) {
-        this.preferred_end_time = preferred_end_time;
+    public void setPreferredEndTime(LocalTime preferredEndTime) {
+        this.preferredEndTime = preferredEndTime;
     }
 
-    public LocalDateTime getCreated_at() {
-        return created_at;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreated_at(LocalDateTime created_at) {
-        this.created_at = created_at;
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

@@ -3,29 +3,29 @@ package com.DBP.StudyFit;
 import java.time.LocalDateTime;
 
 public class TeamMember {
-    private int team_member_id;
+    private int teamMemberId;
     private Role role;
-    private LocalDateTime joined_at;
-    private int team_id;
-    private int user_id;
+    private LocalDateTime joinedAt;
+    private int teamId;
+    private int userId;
 
     // 생성자
-    public TeamMember(int team_member_id, Role role, LocalDateTime joined_at,
-                      int teamd_id, int user_id) {
-        this.team_member_id = team_member_id;
+    public TeamMember(int teamMemberId, Role role, LocalDateTime joinedAt,
+                      int teamId, int userId) {
+        this.teamMemberId = teamMemberId;
         this.role = role;
-        this.joined_at = joined_at;
-        this.team_id = teamd_id;
-        this.user_id = user_id;
+        this.joinedAt = joinedAt;
+        this.teamId = teamId;
+        this.userId = userId;
     }
 
     // Getter 및 Setter
-    public int getTeam_member_id() {
-        return team_member_id;
+    public int getTeamMemberId() {
+        return teamMemberId;
     }
 
-    public void setTeam_member_id(int team_member_id) {
-        this.team_member_id = team_member_id;
+    public void setTeamMemberId(int teamMemberId) {
+        this.teamMemberId = teamMemberId;
     }
 
     public Role getRole() {
@@ -36,27 +36,27 @@ public class TeamMember {
         this.role = role;
     }
 
-    public LocalDateTime getJoined_at() {
-        return joined_at;
+    public LocalDateTime getJoinedAt() {
+        return joinedAt;
     }
 
-    public void setJoined_at(LocalDateTime joined_at) {
-        this.joined_at = joined_at;
+    public void setJoinedAt(LocalDateTime joinedAt) {
+        this.joinedAt = joinedAt;
     }
 
-    public int getTeam_id() {
-        return team_id;
+    public int getTeamId() {
+        return teamId;
     }
 
-    public void setTeam_id(int team_id) {
-        this.team_id = team_id;
+    public void setTeamId(int teamId) {
+        this.teamId = teamId;
     }
 
-    public int getUser_id() {
-        return user_id;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setUser_id(int user_id) {
-        this.user_id = user_id;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 }

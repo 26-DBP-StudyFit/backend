@@ -3,32 +3,32 @@ package com.DBP.StudyFit;
 import java.time.LocalDateTime;
 
 public class JoinApplication {
-    private int application_id;
+    private int applicationId;
     private JoinApplicationStatus status;
-    private LocalDateTime created_at;
-    private LocalDateTime processed_at;
-    private int team_id;
-    private int user_id;
+    private LocalDateTime createdAt;
+    private LocalDateTime processedAt;
+    private int teamId;
+    private int userId;
 
     // 생성자
-    public JoinApplication(int application_id, JoinApplicationStatus status,
-                           LocalDateTime created_at, LocalDateTime processed_at,
-                           int team_id, int user_id) {
-        this.application_id = application_id;
+    public JoinApplication(int applicationId, JoinApplicationStatus status,
+                           LocalDateTime createdAt, LocalDateTime processedAt,
+                           int teamId, int userId) {
+        this.applicationId = applicationId;
         this.status = status;
-        this.created_at = created_at;
-        this.processed_at = processed_at;
-        this.team_id = team_id;
-        this.user_id = user_id;
+        this.createdAt = createdAt;
+        this.processedAt = processedAt;
+        this.teamId = teamId;
+        this.userId = userId;
     }
 
-    // Getter 및 Setter 정의
-    public int getApplication_id() {
-        return application_id;
+    // Getter 및 Setter
+    public int getApplicationId() {
+        return applicationId;
     }
 
-    public void setApplication_id(int application_id) {
-        this.application_id = application_id;
+    public void setApplicationId(int applicationId) {
+        this.applicationId = applicationId;
     }
 
     public JoinApplicationStatus getStatus() {
@@ -39,35 +39,35 @@ public class JoinApplication {
         this.status = status;
     }
 
-    public LocalDateTime getCreated_at() {
-        return created_at;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreated_at(LocalDateTime created_at) {
-        this.created_at = created_at;
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
-    public LocalDateTime getProcessed_at() {
-        return processed_at;
+    public LocalDateTime getProcessedAt() {
+        return processedAt;
     }
 
-    public void setProcessed_at(LocalDateTime processed_at) {
-        this.processed_at = processed_at;
+    public void setProcessedAt(LocalDateTime processedAt) {
+        this.processedAt = processedAt;
     }
 
-    public int getTeam_id() {
-        return team_id;
+    public int getTeamId() {
+        return teamId;
     }
 
-    public void setTeam_id(int team_id) {
-        this.team_id = team_id;
+    public void setTeamId(int teamId) {
+        this.teamId = teamId;
     }
 
-    public int getUser_id() {
-        return user_id;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setUser_id(int user_id) {
-        this.user_id = user_id;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 }
