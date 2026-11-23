@@ -1,4 +1,4 @@
-package com.DBP.StudyFit.TeamMember;
+package com.DBP.StudyFit.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

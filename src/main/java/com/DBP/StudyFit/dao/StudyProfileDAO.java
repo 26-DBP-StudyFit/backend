@@ -1,4 +1,8 @@
-package com.DBP.StudyFit;
+package com.DBP.StudyFit.dao;
+import com.DBP.StudyFit.JDBCUtil;
+import com.DBP.StudyFit.domain.StudyProfile;
+import com.DBP.StudyFit.domain.StudyType;
+
 import java.sql.*;
 
 public class StudyProfileDAO {

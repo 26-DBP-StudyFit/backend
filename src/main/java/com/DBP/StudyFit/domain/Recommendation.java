@@ -1,4 +1,4 @@
-package com.DBP.StudyFit.recommendation.domain;
+package com.DBP.StudyFit.domain;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

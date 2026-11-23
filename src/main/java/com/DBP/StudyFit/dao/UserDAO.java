@@ -1,4 +1,7 @@
-package com.DBP.StudyFit;
+package com.DBP.StudyFit.dao;
+import com.DBP.StudyFit.JDBCUtil;
+import com.DBP.StudyFit.domain.User;
+
 import java.sql.*;
 
 public class UserDAO {
