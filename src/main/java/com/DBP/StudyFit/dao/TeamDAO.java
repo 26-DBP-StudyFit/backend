@@ -4,6 +4,9 @@ import com.DBP.StudyFit.JDBCUtil;
 import com.DBP.StudyFit.domain.RegionCode;
 import com.DBP.StudyFit.domain.Study_Category;
 import com.DBP.StudyFit.domain.Team;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
 import java.sql.*;
 import java.time.DayOfWeek;
@@ -12,6 +15,8 @@ import java.util.List;
 import java.sql.Timestamp;
 import java.sql.ResultSet;
 
+@Component
+@Repository
 public class TeamDAO {
     private JDBCUtil jdbcUtil = null;
 

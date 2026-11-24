@@ -20,7 +20,7 @@ public class JDBCUtil {
     { // static initializer
 // property 파일에 저장된 DB 접속 정보를 Properties 객체로 읽어 들임 (예외 처리 생략)
         InputStream input
-                = getClass().getResourceAsStream("/dbinfo.properties"); // DB 접속 정보 설정 파일
+                = getClass().getResourceAsStream("/application.yml"); // DB 접속 정보 설정 파일
         try {
             prop.load(input);
         } catch (IOException e) {
