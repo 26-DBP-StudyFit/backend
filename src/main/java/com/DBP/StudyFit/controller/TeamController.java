@@ -19,7 +19,6 @@ public class TeamController {
     // 팀 생성 컨트롤러
     @PostMapping("/teams")
     public String createTeam(@ModelAttribute Team team) {
-
         int createdId = teamManager.createTeam(team);
 
         if (createdId < 0) {
