@@ -7,8 +7,10 @@ import java.util.List;
 import com.DBP.StudyFit.domain.JoinApplication;
 import com.DBP.StudyFit.JDBCUtil;
 import com.DBP.StudyFit.domain.JoinApplicationStatus;
+import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
+@Repository
 public class JoinApplicationDAO {
     private JDBCUtil jdbcUtil = null;
 
