@@ -162,7 +162,7 @@ public class JoinApplicationDAO {
 
     // 동일한 팀에 처리 대기 중인 신청이 있는지 확인
     public boolean existingPendingApplication(
-            int teamId, int applicantId) {
+            int teamId, int userId) {
 
         String query =
                 "SELECT COUNT(*) FROM join_application "
@@ -172,7 +172,7 @@ public class JoinApplicationDAO {
 
         jdbcUtil.setSqlAndParameters(
                 query,
-                new Object[] {teamId, applicantId}
+                new Object[] {teamId, userId}
         );
 
         try {
