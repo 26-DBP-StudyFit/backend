@@ -28,14 +28,17 @@ public class JDBCUtil {
         }
     }
 
-    private static void initJDBCUtil() { // DBCP 초기화
+    private static void initJDBCUtil() {
+        String username = System.getenv("DB_USERNAME");
+        String password = System.getenv("DB_PASSWORD");
+        // DBCP 초기화
         try {
             if (ds == null) { // DBCP DataSource 생성 및 설정
                 BasicDataSource bds = new BasicDataSource();
                 bds.setDriverClassName(prop.getProperty("db.driver"));
                 bds.setUrl(prop.getProperty("db.url"));
-                bds.setUsername(prop.getProperty("db.username"));
-                bds.setPassword(prop.getProperty("db.password"));
+                bds.setUsername(username);
+                bds.setPassword(password);
                 ds = bds;
             }
         } catch (Exception ex) {
@@ -57,7 +60,7 @@ public class JDBCUtil {
 
     public void setSqlAndParameters(String sql, Object[] params) { // SQL문 및 매개변수 저장
         this.sql = sql;
-        this.parameters = parameters;
+        this.parameters = params;
     }
 
     private int getParameterSize() { // 매개변수의 개수를 반환
@@ -145,7 +148,9 @@ public class JDBCUtil {
 
     public void rollback() { // 트랜잭션 rollback 수행
         try {
-            conn.rollback();
+            if (conn != null) {
+                conn.rollback();
+            }
         } catch (SQLException ex) {
             ex.printStackTrace();
         }

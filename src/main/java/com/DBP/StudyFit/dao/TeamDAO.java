@@ -4,14 +4,20 @@ import com.DBP.StudyFit.JDBCUtil;
 import com.DBP.StudyFit.domain.RegionCode;
 import com.DBP.StudyFit.domain.Study_Category;
 import com.DBP.StudyFit.domain.Team;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
 import java.sql.*;
 import java.time.DayOfWeek;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.sql.Timestamp;
 import java.sql.ResultSet;
 
+@Component
+@Repository
 public class TeamDAO {
     private JDBCUtil jdbcUtil = null;
 
@@ -56,6 +62,15 @@ public class TeamDAO {
             insert.append("(team_id, title, study_category, recruit_count, region_code, preferred_days, preferred_start_time, preferred_end_time, created_at) ");
             insert.append("VALUES (?, ?, ?, ?, ?, ?, ?, ?, SYSDATE)");
 
+            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
+            String startTimeStr = team.getPreferredStartTime() != null
+                    ? team.getPreferredStartTime().format(timeFormatter)
+                    : null;
+            String endTimeStr = team.getPreferredEndTime() != null
+                    ? team.getPreferredEndTime().format(timeFormatter)
+                    : null;
+
             Object[] parameters = new Object[]{
                     newTeamId,
                     team.getTitle(),
@@ -63,8 +78,8 @@ public class TeamDAO {
                     team.getRecruitCount(),
                     team.getRegionCode().name(),
                     team.getStudyDay().name(),
-                    team.getPreferredStartTime(),
-                    team.getPreferredEndTime()
+                    startTimeStr,
+                    endTimeStr
             };
 
             jdbcUtil.setSqlAndParameters(insert.toString(), parameters);
