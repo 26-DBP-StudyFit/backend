@@ -14,7 +14,7 @@ public class TeamMember {
     private User user;               // 사용자 정보
     private Team team;               // 스터디그룹 정보
 
-    public TeamMember() {
+    public TeamMember(long teamMemberId, long teamId, long memberId, String role, LocalDateTime joinedAt) {
     }
 
     public TeamMember(Integer teamId, Long memberId, TeamMemberRole role, LocalDateTime joinedAt) {
