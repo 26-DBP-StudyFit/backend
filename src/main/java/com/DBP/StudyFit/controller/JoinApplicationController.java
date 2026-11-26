@@ -22,7 +22,7 @@ public class JoinApplicationController {
 
         int result = joinApplicationManager.createApplication(joinApplication);
 
-        if (result == -1) {
+        if (result == -2) {
             return "이미 가입된 신청입니다.";
         }
         if (result < 0) {
