@@ -14,14 +14,16 @@ public class JoinApplicationManager {
     }
 
     // 팀 가입 신청
-    public int createApplication(JoinApplication joinApplication) {
-        if (joinApplication == null || joinApplication.getUserId() < 0 || joinApplication.getTeamId() < 0) {
-            return -1;
-        }
+    // Manager
+    public void createApplication(int teamId, int userId) {
+        if (joinApplicationDAO.existingPendingApplication(teamId, userId))
+            throw new IllegalStateException("이미 가입 신청한 팀입니다");
 
-        if (joinApplicationDAO.existingPendingApplication(joinApplication.getTeamId(), joinApplication.getUserId())) {
-            return -2;
-        }
-        return joinApplicationDAO.create(joinApplication);
+        JoinApplication application = new JoinApplication();
+        application.setTeamId(teamId);
+        application.setUserId(userId);
+
+        if (joinApplicationDAO.create(application) < 0)
+            throw new RuntimeException("가입 신청 실패");
     }
 }

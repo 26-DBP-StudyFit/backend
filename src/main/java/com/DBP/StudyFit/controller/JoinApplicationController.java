@@ -2,10 +2,8 @@ package com.DBP.StudyFit.controller;
 
 import com.DBP.StudyFit.domain.JoinApplication;
 import com.DBP.StudyFit.manager.JoinApplicationManager;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class JoinApplicationController {
@@ -17,17 +15,14 @@ public class JoinApplicationController {
     }
 
     @PostMapping("/teams/{teamId}/applications")
-    public String createApplication(@PathVariable int teamId, @ModelAttribute JoinApplication joinApplication) {
-        joinApplication.setTeamId(teamId); // 우선 URL의 teamId 사용, 추후 로그인 구현되면 세션에서 가져옴
-
-        int result = joinApplicationManager.createApplication(joinApplication);
-
-        if (result == -2) {
-            return "이미 가입된 신청입니다.";
+    public ResponseEntity<String> createApplication(@PathVariable int teamId, @RequestParam int userId) {
+        try {
+            joinApplicationManager.createApplication(teamId, userId);
+            return ResponseEntity.ok("가입 신청 완료");
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(409).body(e.getMessage());
+        } catch (RuntimeException e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
-        if (result < 0) {
-            return "팀 가입 신청 실패";
-        }
-        return "팀 가입 신청 성공";
     }
 }
