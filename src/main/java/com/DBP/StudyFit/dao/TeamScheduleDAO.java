@@ -8,7 +8,7 @@ import java.util.List;
 
 // 팀 일정 DAO (MyBatis) - SQL은 resources/mapper/ScheduleMapper.xml
 @Mapper
-public interface ScheduleDAO {
+public interface TeamScheduleDAO {
 
     /** 팀의 전체 일정을 시작 시각 순으로 조회 */
     List<ScheduleDTO> findByTeamId(@Param("teamId") Long teamId);

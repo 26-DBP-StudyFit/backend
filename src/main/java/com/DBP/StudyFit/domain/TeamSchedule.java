@@ -2,7 +2,7 @@ package com.DBP.StudyFit.domain;
 
 import java.time.LocalDateTime;
 
-public class Schedule {
+public class TeamSchedule {
 
     private Long id;
     private Team team;
@@ -17,10 +17,10 @@ public class Schedule {
 
 
     // MyBatis / JDBC 매핑용 기본 생성자
-    public Schedule() {
+    public TeamSchedule() {
     }
 
-    public Schedule(Team team, String title, LocalDateTime startAt, LocalDateTime endAt,
+    public TeamSchedule(Team team, String title, LocalDateTime startAt, LocalDateTime endAt,
                     String location, ScheduleType scheduleType, String recurrenceRule) {
         this.team = team;
         this.title = title;

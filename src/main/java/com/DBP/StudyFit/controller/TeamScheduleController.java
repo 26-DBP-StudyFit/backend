@@ -20,7 +20,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/schedule")
-public class ScheduleController {
+public class TeamScheduleController {
 
     // 로그인 시 세션에 저장하는 User 객체의 이름 / 로그인 화면 주소
     // Todo: 실제 로그인 컨트롤러와 맞출 것
@@ -29,7 +29,7 @@ public class ScheduleController {
 
     private final ScheduleManager scheduleManager;
 
-    public ScheduleController(ScheduleManager scheduleManager) {
+    public TeamScheduleController(ScheduleManager scheduleManager) {
         this.scheduleManager = scheduleManager;
     }
 

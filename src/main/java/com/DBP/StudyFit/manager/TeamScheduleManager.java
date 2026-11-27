@@ -1,8 +1,8 @@
 package com.DBP.StudyFit.manager;
 
-import com.DBP.StudyFit.dao.ScheduleDAO;
+import com.DBP.StudyFit.dao.TeamScheduleDAO;
 import com.DBP.StudyFit.dao.TeamMemberDAO;
-import com.DBP.StudyFit.domain.Schedule;
+import com.DBP.StudyFit.domain.TeamSchedule;
 import com.DBP.StudyFit.domain.Team;
 import com.DBP.StudyFit.domain.TeamMember;
 import com.DBP.StudyFit.dto.ScheduleDTO;
@@ -20,21 +20,21 @@ public class ScheduleManager {
     private static final int MAX_LOCATION = 200;
     private static final int MAX_RECURRENCE_RULE = 500;
 
-    private final ScheduleDAO scheduleDAO;
+    private final TeamScheduleDAO teamScheduleDAO;
     private final TeamMemberDAO teamMemberDAO;
 
-    public ScheduleManager(ScheduleDAO scheduleDAO, TeamMemberDAO teamMemberDAO) {
-        this.scheduleDAO = scheduleDAO;
+    public ScheduleManager(TeamScheduleDAO teamScheduleDAO, TeamMemberDAO teamMemberDAO) {
+        this.teamScheduleDAO = teamScheduleDAO;
         this.teamMemberDAO = teamMemberDAO;
     }
 
-    public List<Schedule> getSchedules(int teamId, long memberId) {
+    public List<TeamSchedule> getSchedules(int teamId, long memberId) {
         requireMember(teamId, memberId);
 
         LocalDateTime now = LocalDateTime.now();
-        List<Schedule> schedules = new ArrayList<>();
-        for (ScheduleDTO dto : scheduleDAO.findByTeamId(Long.valueOf(teamId))) {
-            Schedule schedule = toDomain(dto);
+        List<TeamSchedule> schedules = new ArrayList<>();
+        for (ScheduleDTO dto : teamScheduleDAO.findByTeamId(Long.valueOf(teamId))) {
+            TeamSchedule schedule = toDomain(dto);
             schedule.refreshStatus(now);
             schedules.add(schedule);
         }
@@ -48,7 +48,7 @@ public class ScheduleManager {
                 .orElse(false);
     }
 
-    public Long createSchedule(Schedule schedule, long memberId) {
+    public Long createSchedule(TeamSchedule schedule, long memberId) {
         if (schedule == null || schedule.getTeam() == null) {
             throw new IllegalArgumentException("팀 정보가 없습니다.");
         }
@@ -62,7 +62,7 @@ public class ScheduleManager {
         validate(schedule);
 
         ScheduleDTO dto = toDTO(schedule);
-        scheduleDAO.insert(dto);
+        teamScheduleDAO.insert(dto);
         return dto.getScheduleId();
     }
 
@@ -73,7 +73,7 @@ public class ScheduleManager {
     }
 
     // 앞뒤 공백 제거, 빈 문자열은 null로 통일
-    private void normalize(Schedule schedule) {
+    private void normalize(TeamSchedule schedule) {
         schedule.setTitle(blankToNull(schedule.getTitle()));
         schedule.setLocation(blankToNull(schedule.getLocation()));
         schedule.setRecurrenceRule(blankToNull(schedule.getRecurrenceRule()));
@@ -87,7 +87,7 @@ public class ScheduleManager {
         return trimmed.isEmpty() ? null : trimmed;
     }
 
-    private void validate(Schedule schedule) {
+    private void validate(TeamSchedule schedule) {
         if (schedule.getTitle() == null) {
             throw new IllegalArgumentException("일정 제목을 입력해 주세요.");
         }
@@ -123,11 +123,11 @@ public class ScheduleManager {
     }
 
     // DTO → 도메인. Team은 조회 비용을 줄이기 위해 teamId만 채운다.
-    private Schedule toDomain(ScheduleDTO dto) {
+    private TeamSchedule toDomain(ScheduleDTO dto) {
         Team team = new Team();
         team.setTeamId(dto.getTeamId().intValue());
 
-        Schedule schedule = new Schedule(team, dto.getTitle(), dto.getStartAt(), dto.getEndAt(),
+        TeamSchedule schedule = new TeamSchedule(team, dto.getTitle(), dto.getStartAt(), dto.getEndAt(),
                 dto.getLocation(), dto.getScheduleType(), dto.getRecurrenceRule());
         schedule.setId(dto.getScheduleId());
         schedule.setCreatedAt(dto.getCreatedAt());
@@ -135,7 +135,7 @@ public class ScheduleManager {
     }
 
     // 도메인 → DTO (등록용). scheduleId는 insert 후 채워지고, createdAt은 DB 기본값을 쓴다.
-    private ScheduleDTO toDTO(Schedule schedule) {
+    private ScheduleDTO toDTO(TeamSchedule schedule) {
         ScheduleDTO dto = new ScheduleDTO();
         dto.setTeamId(Long.valueOf(schedule.getTeam().getTeamId()));
         dto.setTitle(schedule.getTitle());

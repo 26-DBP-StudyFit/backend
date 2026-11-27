@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.DBP.StudyFit.dao.ScheduleDAO">
+<mapper namespace="com.DBP.StudyFit.dao.TeamScheduleDAO">
 
     <resultMap id="scheduleResultMap" type="com.DBP.StudyFit.dto.ScheduleDTO">
         <id     property="scheduleId"     column="SCHEDULE_ID"/>
