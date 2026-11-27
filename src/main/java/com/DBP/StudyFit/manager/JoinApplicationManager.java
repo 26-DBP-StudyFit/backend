@@ -1,5 +1,6 @@
 package com.DBP.StudyFit.manager;
 
+import com.DBP.StudyFit.JDBCUtil;
 import com.DBP.StudyFit.dao.JoinApplicationDAO;
 import com.DBP.StudyFit.dao.TeamMemberDAO;
 import com.DBP.StudyFit.domain.JoinApplication;
@@ -16,13 +17,10 @@ public class JoinApplicationManager {
 
     private final JoinApplicationDAO joinApplicationDAO;
     private final TeamMemberDAO teamMemberDAO;
-    private final DataSource dataSource;   // javax.sql.DataSource
 
-    public JoinApplicationManager(JoinApplicationDAO joinApplicationDAO,
-                                  TeamMemberDAO teamMemberDAO, DataSource dataSource) {
+    public JoinApplicationManager(JoinApplicationDAO joinApplicationDAO, TeamMemberDAO teamMemberDAO) {
         this.joinApplicationDAO = joinApplicationDAO;
         this.teamMemberDAO = teamMemberDAO;
-        this.dataSource = dataSource;
     }
 
     // 팀 가입 신청
@@ -47,7 +45,7 @@ public class JoinApplicationManager {
         if (app.getStatus() != JoinApplicationStatus.PENDING)
             throw new IllegalStateException("이미 처리된 신청입니다.");
 
-        try (Connection conn = dataSource.getConnection()) {
+        try (Connection conn = new JDBCUtil().getConnection()) {
             conn.setAutoCommit(false);
             try {
                 if (!teamMemberDAO.isLeader(conn, teamId, userId))

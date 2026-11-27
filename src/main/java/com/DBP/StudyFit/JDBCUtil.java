@@ -46,6 +46,10 @@ public class JDBCUtil {
         }
     }
 
+    // 여러 DAO 작업을 한 트랜잭션으로 묶을 때 사용
+    public Connection getConnection() throws SQLException {
+        return ds.getConnection();
+    }
     public JDBCUtil() {
         initJDBCUtil();
     } // 기본 생성자
