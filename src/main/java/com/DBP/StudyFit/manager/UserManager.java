@@ -2,6 +2,8 @@ package com.DBP.StudyFit.manager;
 
 import java.sql.SQLException;
 
+import org.springframework.stereotype.Service;
+
 import com.DBP.StudyFit.dao.UserDAO;
 import com.DBP.StudyFit.domain.User;
 import com.DBP.StudyFit.exception.*;
@@ -9,16 +11,12 @@ import com.DBP.StudyFit.exception.*;
  * 회원 관련 기능
  * 담당 유스케이스: 회원가입, 로그인, 마이페이지 조회(회원 정보), 프로필 수정, 회원 탈퇴
  */
+@Service
 public class UserManager {
-    private static UserManager userMan = new UserManager();
-    private UserDAO userDAO;
+    private final UserDAO userDAO;
 
-    private UserManager() {
-        userDAO = new UserDAO();
-    }
-
-    public static UserManager getInstance() {
-        return userMan;
+    public UserManager(UserDAO userDAO) {  // Spring이 UserDAO를 넣어 줌
+        this.userDAO = userDAO;
     }
 
     /* =========================== 회원가입 =========================== */
