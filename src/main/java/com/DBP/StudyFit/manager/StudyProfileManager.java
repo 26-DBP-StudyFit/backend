@@ -2,6 +2,8 @@ package com.DBP.StudyFit.manager;
 
 import java.sql.SQLException;
 
+import org.springframework.stereotype.Service;
+
 import com.DBP.StudyFit.dao.StudyProfileDAO;
 import com.DBP.StudyFit.domain.StudyProfile;
 import com.DBP.StudyFit.domain.StudyType;
@@ -10,16 +12,12 @@ import com.DBP.StudyFit.domain.StudyType;
  * 학습 성향 설문 관련 비즈니스 로직
  * 담당 기능: 학습 성향 설문, 설문 재검사, 마이페이지 조회(설문 결과)
  */
+@Service
 public class StudyProfileManager {
-    private static StudyProfileManager profileMan = new StudyProfileManager();
-    private StudyProfileDAO profileDAO;
+    private final StudyProfileDAO profileDAO;
 
-    private StudyProfileManager() {
-        profileDAO = new StudyProfileDAO();
-    }
-
-    public static StudyProfileManager getInstance() {
-        return profileMan;
+    public StudyProfileManager(StudyProfileDAO profileDAO) {  // Spring이 StudyProfileDAO를 넣어 줌
+        this.profileDAO = profileDAO;
     }
 
     /* =========================== 학습 성향 설문 =========================== */

@@ -37,7 +37,11 @@ public class StudyProfileController {
     private static final String SURVEY_VIEW = "profile/survey";
     private static final String RESULT_VIEW = "profile/surveyResult";
 
-    private final StudyProfileManager profileManager = StudyProfileManager.getInstance();
+    private final StudyProfileManager profileManager;
+
+    public StudyProfileController(StudyProfileManager profileManager) {  // Spring이 Manager를 넣어 줌
+        this.profileManager = profileManager;
+    }
 
     /* =========================== 학습 성향 설문 =========================== */
 
