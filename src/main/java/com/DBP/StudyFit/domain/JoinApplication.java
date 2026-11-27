@@ -22,6 +22,9 @@ public class JoinApplication {
         this.userId = userId;
     }
 
+    public JoinApplication() {
+    }
+
     // Getter 및 Setter
     public int getApplicationId() {
         return applicationId;
