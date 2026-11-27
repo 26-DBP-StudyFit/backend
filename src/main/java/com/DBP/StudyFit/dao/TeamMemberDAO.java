@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.DBP.StudyFit.JDBCUtil;
 import com.DBP.StudyFit.domain.Team;
 import com.DBP.StudyFit.domain.TeamMember;
 import com.DBP.StudyFit.domain.TeamMemberRole;
@@ -182,5 +183,24 @@ public class TeamMemberDAO {
     private LocalDateTime readDateTime(ResultSet rs, String column) throws SQLException {
         Timestamp value = rs.getTimestamp(column);
         return value == null ? null : value.toLocalDateTime();
+    }
+
+    /** JDBCUtil 방식: 구성원이면 소속 정보를, 아니면(또는 DB 오류면) Optional.empty() 를 반환한다. */
+    public Optional<TeamMember> findByTeamIdAndMemberId(long teamId, long memberId) {
+        JDBCUtil jdbcUtil = new JDBCUtil();   // 메서드마다 새로 만든다 (싱글톤 DAO 필드에 두지 않는다)
+        String sql = "SELECT team_id, member_id, role, joined_at " +
+                "FROM team_member WHERE team_id = ? AND member_id = ?";
+        jdbcUtil.setSqlAndParameters(sql, new Object[] {teamId, memberId});
+        try {
+            ResultSet rs = jdbcUtil.executeQuery();
+            if (rs != null && rs.next()) {
+                return Optional.of(mapTeamMember(rs));
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            jdbcUtil.close();
+        }
+        return Optional.empty();
     }
 }
