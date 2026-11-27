@@ -1,5 +1,6 @@
 package com.DBP.StudyFit.manager;
 
+import com.DBP.StudyFit.JDBCUtil;
 import com.DBP.StudyFit.dao.TeamScheduleDAO;
 import com.DBP.StudyFit.dao.TeamMemberDAO;
 import com.DBP.StudyFit.domain.TeamSchedule;
@@ -8,6 +9,8 @@ import com.DBP.StudyFit.domain.TeamMember;
 import com.DBP.StudyFit.dto.ScheduleDTO;
 import org.springframework.stereotype.Service;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,12 +43,9 @@ public class TeamScheduleManager {
         }
         return schedules;
     }
-
     // 해당 팀의 팀장인지 확인 (화면에서 "일정 등록" 버튼 노출 여부 판단용)
-    public boolean isLeader(int teamId, long memberId) {
-        return teamMemberDAO.findByTeamIdAndMemberId(teamId, memberId)
-                .map(TeamMember::isLeader)
-                .orElse(false);
+    public boolean isLeader(int teamId, int memberId) {
+        return teamMemberDAO.isLeader(teamId, memberId);
     }
 
     public Integer createSchedule(TeamSchedule schedule, long memberId) {
