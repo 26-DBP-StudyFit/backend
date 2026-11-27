@@ -14,6 +14,7 @@ import com.DBP.StudyFit.domain.Team;
 import com.DBP.StudyFit.domain.TeamMember;
 import com.DBP.StudyFit.domain.TeamMemberRole;
 import com.DBP.StudyFit.domain.User;
+import org.springframework.stereotype.Repository;
 
 /**
  * Oracle 기준 팀 소속 정보 DAO.
@@ -33,6 +34,7 @@ import com.DBP.StudyFit.domain.User;
  * 모든 조회는 domain.TeamMember를 반환한다. JOIN으로 얻은 회원 이름은
  * TeamMember.user(User.name)에, 팀 제목은 TeamMember.team(Team.title)에 채운다.
  */
+@Repository
 public class TeamMemberDAO {
     private static final String INSERT_SQL =
             "INSERT INTO team_member " +
