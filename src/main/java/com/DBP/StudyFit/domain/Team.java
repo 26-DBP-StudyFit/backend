@@ -14,16 +14,19 @@ public class Team {
     private LocalTime preferredStartTime;
     private LocalTime preferredEndTime;
     private LocalDateTime createdAt;
+    private String description;
+    private Long temperature;
 
     // 기본 생성자
     public Team() {
     }
 
     // 전체 필드를 받는 생성자
-    public Team(int teamId, String title, RegionCode regionCode,
-                Study_Category studyCategory, int recruitCount,
-                DayOfWeek studyDay, LocalTime preferredStartTime,
-                LocalTime preferredEndTime, LocalDateTime createdAt) {
+
+
+    public Team(int teamId, String title, RegionCode regionCode, Study_Category studyCategory,
+                int recruitCount, DayOfWeek studyDay, LocalTime preferredStartTime, LocalTime preferredEndTime,
+                LocalDateTime createdAt, String description, Long temperature) {
         this.teamId = teamId;
         this.title = title;
         this.regionCode = regionCode;
@@ -33,6 +36,8 @@ public class Team {
         this.preferredStartTime = preferredStartTime;
         this.preferredEndTime = preferredEndTime;
         this.createdAt = createdAt;
+        this.description = description;
+        this.temperature = temperature;
     }
 
     public int getTeamId() {
@@ -105,5 +110,21 @@ public class Team {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Long getTemperature() {
+        return temperature;
+    }
+
+    public void setTemperature(Long temperature) {
+        this.temperature = temperature;
     }
 }
