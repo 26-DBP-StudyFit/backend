@@ -12,14 +12,11 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 
 @Repository
 public class JoinApplicationDAO {
-    private JDBCUtil jdbcUtil = null;
 
-    public JoinApplicationDAO() {
-        jdbcUtil = new JDBCUtil();
-    }
 
     // 새로운 팀 가입 신청 등록
     public int create(JoinApplication application) {
+        JDBCUtil jdbcUtil = new JDBCUtil();
         int newId = -1;
 
         try {
@@ -64,6 +61,8 @@ public class JoinApplicationDAO {
 
     // 신청 번호로 가입 신청 조회
     public JoinApplication findApplicationById(int applicationId) {
+        JDBCUtil jdbcUtil = new JDBCUtil();
+
         StringBuffer query = new StringBuffer();
         query.append("SELECT application_id, team_id, member_id, ");
         query.append("status, created_at, processed_at ");
@@ -92,6 +91,8 @@ public class JoinApplicationDAO {
 
     // 특정 팀에 들어온 가입 신청 목록 조회
     public List<JoinApplication> findApplicationsByTeamId(int teamId) {
+        JDBCUtil jdbcUtil = new JDBCUtil();
+
         StringBuffer query = new StringBuffer();
         query.append("SELECT application_id, team_id, member_id, ");
         query.append("status, created_at, processed_at ");
@@ -127,6 +128,8 @@ public class JoinApplicationDAO {
     // 특정 회원이 보낸 가입 신청 목록 조회
     public List<JoinApplication> findApplicationsByApplicantId(
             int applicantId) {
+        JDBCUtil jdbcUtil = new JDBCUtil();
+
 
         StringBuffer query = new StringBuffer();
         query.append("SELECT application_id, team_id, member_id, ");
@@ -163,6 +166,7 @@ public class JoinApplicationDAO {
     // 동일한 팀에 처리 대기 중인 신청이 있는지 확인
     public boolean existingPendingApplication(
             int teamId, int userId) {
+        JDBCUtil jdbcUtil = new JDBCUtil();
 
         String query =
                 "SELECT COUNT(*) FROM join_application "
@@ -192,6 +196,8 @@ public class JoinApplicationDAO {
 
     // 신청 상태 변경: A(승인), R(거절)
     public int updateStatus(int applicationId, String status) {
+        JDBCUtil jdbcUtil = new JDBCUtil();
+
         String update =
                 "UPDATE join_application "
                         + "SET status = ?, processed_at = SYSDATE "
@@ -221,6 +227,8 @@ public class JoinApplicationDAO {
 
     // 신청자가 처리 전 신청을 취소
     public int remove(int applicationId, int applicantId) {
+        JDBCUtil jdbcUtil = new JDBCUtil();
+
         String delete =
                 "DELETE FROM join_application "
                         + "WHERE application_id = ? "
