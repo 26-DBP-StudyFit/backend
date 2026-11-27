@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 public class TeamSchedule {
 
-    private Long id;
+    private Integer teamScheduleId;
     private Team team;
     private String title;
     private LocalDateTime startAt;
@@ -73,12 +73,12 @@ public class TeamSchedule {
         }
     }
 
-    public Long getId() {
-        return id;
+    public Integer getTeamScheduleId() {
+        return teamScheduleId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setTeamScheduleId(Integer id) {
+        this.teamScheduleId = id;
     }
 
     public Team getTeam() {
@@ -155,7 +155,7 @@ public class TeamSchedule {
 
     @Override
     public String toString() {
-        return "Schedule{id=" + id + ", title='" + title + "', startAt=" + startAt
+        return "Schedule{id=" + teamScheduleId + ", title='" + title + "', startAt=" + startAt
                 + ", endAt=" + endAt + ", location='" + location + "', scheduleType=" + scheduleType
                 + ", recurrenceRule='" + recurrenceRule + "', status=" + status + "}";
     }

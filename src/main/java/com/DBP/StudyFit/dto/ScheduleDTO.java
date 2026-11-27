@@ -7,8 +7,8 @@ import java.time.LocalDateTime;
 // 상태(예정/진행중/종료)는 저장하지 않고 Schedule.refreshStatus()로 계산한다.
 public class ScheduleDTO {
 
-    private Long scheduleId;
-    private Long teamId;
+    private Integer teamScheduleId;
+    private int teamId;
     private String title;
     private LocalDateTime startAt;
     private LocalDateTime endAt;
@@ -19,20 +19,19 @@ public class ScheduleDTO {
 
     public ScheduleDTO() {
     }
-
-    public Long getScheduleId() {
-        return scheduleId;
+    public Integer getTeamScheduleId() {
+        return teamScheduleId;
     }
 
-    public void setScheduleId(Long scheduleId) {
-        this.scheduleId = scheduleId;
+    public void setTeamScheduleId(Integer teamScheduleId) {
+        this.teamScheduleId = teamScheduleId;
     }
 
-    public Long getTeamId() {
+    public int getTeamId() {
         return teamId;
     }
 
-    public void setTeamId(Long teamId) {
+    public void setTeamId(int teamId) {
         this.teamId = teamId;
     }
 

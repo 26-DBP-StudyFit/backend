@@ -48,7 +48,7 @@ public class TeamScheduleManager {
                 .orElse(false);
     }
 
-    public Long createSchedule(TeamSchedule schedule, long memberId) {
+    public Integer createSchedule(TeamSchedule schedule, long memberId) {
         if (schedule == null || schedule.getTeam() == null) {
             throw new IllegalArgumentException("팀 정보가 없습니다.");
         }
@@ -63,7 +63,7 @@ public class TeamScheduleManager {
 
         ScheduleDTO dto = toDTO(schedule);
         teamScheduleDAO.insert(dto);
-        return dto.getScheduleId();
+        return dto.getTeamScheduleId();
     }
 
     private TeamMember requireMember(int teamId, long memberId) {
@@ -125,11 +125,11 @@ public class TeamScheduleManager {
     // DTO → 도메인. Team은 조회 비용을 줄이기 위해 teamId만 채운다.
     private TeamSchedule toDomain(ScheduleDTO dto) {
         Team team = new Team();
-        team.setTeamId(dto.getTeamId().intValue());
+        team.setTeamId(dto.getTeamId());
 
         TeamSchedule schedule = new TeamSchedule(team, dto.getTitle(), dto.getStartAt(), dto.getEndAt(),
                 dto.getLocation(), dto.getScheduleType(), dto.getRecurrenceRule());
-        schedule.setId(dto.getScheduleId());
+        schedule.setTeamScheduleId(dto.getTeamScheduleId());
         schedule.setCreatedAt(dto.getCreatedAt());
         return schedule;
     }
@@ -137,7 +137,7 @@ public class TeamScheduleManager {
     // 도메인 → DTO (등록용). scheduleId는 insert 후 채워지고, createdAt은 DB 기본값을 쓴다.
     private ScheduleDTO toDTO(TeamSchedule schedule) {
         ScheduleDTO dto = new ScheduleDTO();
-        dto.setTeamId(Long.valueOf(schedule.getTeam().getTeamId()));
+        dto.setTeamId(schedule.getTeam().getTeamId());
         dto.setTitle(schedule.getTitle());
         dto.setStartAt(schedule.getStartAt());
         dto.setEndAt(schedule.getEndAt());

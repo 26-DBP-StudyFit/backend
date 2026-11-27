@@ -1,9 +1,6 @@
 package com.DBP.StudyFit.controller;
 
-import com.DBP.StudyFit.domain.Schedule;
-import com.DBP.StudyFit.domain.ScheduleType;
-import com.DBP.StudyFit.domain.Team;
-import com.DBP.StudyFit.domain.User;
+import com.DBP.StudyFit.domain.*;
 import com.DBP.StudyFit.manager.TeamScheduleManager;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -67,7 +64,7 @@ public class TeamScheduleController {
         }
 
         model.addAttribute("teamId", teamId);
-        model.addAttribute("schedule", new Schedule());
+        model.addAttribute("schedule", new TeamSchedule());
         model.addAttribute("scheduleTypes", ScheduleType.values());
         return "schedule/form";
     }
@@ -91,7 +88,7 @@ public class TeamScheduleController {
 
         Team team = new Team();
         team.setTeamId(teamId);
-        Schedule schedule = new Schedule(team, title, startAt, endAt, location, scheduleType, recurrenceRule);
+        TeamSchedule schedule = new TeamSchedule(team, title, startAt, endAt, location, scheduleType, recurrenceRule);
 
         try {
             teamScheduleManager.createSchedule(schedule, user.getUserId());
