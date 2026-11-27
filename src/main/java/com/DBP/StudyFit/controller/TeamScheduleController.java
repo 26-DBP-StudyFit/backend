@@ -4,7 +4,7 @@ import com.DBP.StudyFit.domain.Schedule;
 import com.DBP.StudyFit.domain.ScheduleType;
 import com.DBP.StudyFit.domain.Team;
 import com.DBP.StudyFit.domain.User;
-import com.DBP.StudyFit.manager.ScheduleManager;
+import com.DBP.StudyFit.manager.TeamScheduleManager;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -27,10 +27,10 @@ public class TeamScheduleController {
     private static final String SESSION_USER = "loginUser";
     private static final String LOGIN_REDIRECT = "redirect:/login";
 
-    private final ScheduleManager scheduleManager;
+    private final TeamScheduleManager teamScheduleManager;
 
-    public TeamScheduleController(ScheduleManager scheduleManager) {
-        this.scheduleManager = scheduleManager;
+    public TeamScheduleController(TeamScheduleManager teamScheduleManager) {
+        this.teamScheduleManager = teamScheduleManager;
     }
 
    // GET  /schedule/list?teamId=   팀 일정 목록 (팀원)
@@ -43,8 +43,8 @@ public class TeamScheduleController {
 
         model.addAttribute("teamId", teamId);
         try {
-            model.addAttribute("schedules", scheduleManager.getSchedules(teamId, user.getUserId()));
-            model.addAttribute("leader", scheduleManager.isLeader(teamId, user.getUserId()));
+            model.addAttribute("schedules", teamScheduleManager.getSchedules(teamId, user.getUserId()));
+            model.addAttribute("leader", teamScheduleManager.isLeader(teamId, user.getUserId()));
         } catch (SecurityException e) {
             model.addAttribute("schedules", List.of());
             model.addAttribute("leader", false);
@@ -61,7 +61,7 @@ public class TeamScheduleController {
         if (user == null) {
             return LOGIN_REDIRECT;
         }
-        if (!scheduleManager.isLeader(teamId, user.getUserId())) {
+        if (!teamScheduleManager.isLeader(teamId, user.getUserId())) {
             redirectAttributes.addFlashAttribute("error", "팀장만 일정을 등록할 수 있습니다.");
             return "redirect:/schedule/list?teamId=" + teamId;
         }
@@ -94,7 +94,7 @@ public class TeamScheduleController {
         Schedule schedule = new Schedule(team, title, startAt, endAt, location, scheduleType, recurrenceRule);
 
         try {
-            scheduleManager.createSchedule(schedule, user.getUserId());
+            teamScheduleManager.createSchedule(schedule, user.getUserId());
         } catch (IllegalArgumentException e) {
             // 입력 오류: 입력값을 유지한 채 폼으로 돌아간다.
             model.addAttribute("error", e.getMessage());

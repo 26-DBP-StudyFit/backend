@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class ScheduleManager {
+public class TeamScheduleManager {
 
     // TEAM_SCHEDULE 컬럼 길이
     private static final int MAX_TITLE = 200;
@@ -23,7 +23,7 @@ public class ScheduleManager {
     private final TeamScheduleDAO teamScheduleDAO;
     private final TeamMemberDAO teamMemberDAO;
 
-    public ScheduleManager(TeamScheduleDAO teamScheduleDAO, TeamMemberDAO teamMemberDAO) {
+    public TeamScheduleManager(TeamScheduleDAO teamScheduleDAO, TeamMemberDAO teamMemberDAO) {
         this.teamScheduleDAO = teamScheduleDAO;
         this.teamMemberDAO = teamMemberDAO;
     }
