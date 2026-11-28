@@ -64,15 +64,15 @@ public class JoinApplicationController {
     // 팀 가입 거절
     @PostMapping("/teams/{teamId}/applications/{applicationId}/reject")
     public String rejectApplication(@PathVariable int teamId, @PathVariable int applicationId,
-//                                    @SessionAttribute(name = SESSION_USER, required = false) User user,
-                                    @RequestParam int userId, RedirectAttributes ra) {
+                                    @SessionAttribute(name = SESSION_USER, required = false) User user,
+                                    RedirectAttributes ra) {
 
-//        if (user == null) {
-//            return "redirect:/user/loginForm";
-//        }
+        if (user == null) {
+            return "redirect:/user/loginForm";
+        }
 
         try {
-            joinApplicationManager.rejectApplication(teamId, applicationId, userId); //user.getUserId()
+            joinApplicationManager.rejectApplication(teamId, applicationId, user.getUserId());
             ra.addFlashAttribute("message", "가입 요청을 거절했습니다.");
             return "redirect:/teams/" + teamId; // 성공하면 팀 홈으로 돌아감
         } catch (NotTeamLeaderException e) {
