@@ -2,9 +2,8 @@ package com.DBP.StudyFit.controller;
 
 import com.DBP.StudyFit.domain.Team;
 import com.DBP.StudyFit.manager.TeamManager;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class TeamController {
@@ -27,4 +26,11 @@ public class TeamController {
 
         return "팀 생성 완료";
     }
+
+    // 팀 상세 조회 요청
+//    @GetMapping("/teams/{teamId}")
+//    public String showTeamDetail(@PathVariable int teamId, Model model) {
+//        model.addAttribute("team", teamManager.findTeam(teamId));
+//        return "team/detail";
+//    }
 }

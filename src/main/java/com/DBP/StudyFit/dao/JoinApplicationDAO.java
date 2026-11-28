@@ -8,7 +8,6 @@ import com.DBP.StudyFit.domain.JoinApplication;
 import com.DBP.StudyFit.JDBCUtil;
 import com.DBP.StudyFit.domain.JoinApplicationStatus;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.bind.annotation.ModelAttribute;
 
 @Repository
 public class JoinApplicationDAO {
@@ -225,6 +224,18 @@ public class JoinApplicationDAO {
         return 0;
     }
 
+    public int updateStatus(Connection conn, int applicationId, String status)
+            throws SQLException {
+        String update = "UPDATE join_application "
+                + "SET status = ?, processed_at = SYSDATE "
+                + "WHERE application_id = ? AND status = 'P'";
+        try (PreparedStatement ps = conn.prepareStatement(update)) {
+            ps.setString(1, status);
+            ps.setInt(2, applicationId);
+            return ps.executeUpdate();
+        }
+    }
+
     // 신청자가 처리 전 신청을 취소
     public int remove(int applicationId, int applicantId) {
         JDBCUtil jdbcUtil = new JDBCUtil();
@@ -271,8 +282,7 @@ public class JoinApplicationDAO {
         );
         String statusStr = rs.getString("status");
         if (statusStr != null) {
-            // 예: DB에 "P"가 들어오고 enum 상수가 PENDING인 경우
-            application.setStatus("P".equals(statusStr) ? JoinApplicationStatus.PENDING : JoinApplicationStatus.valueOf(statusStr));
+            application.setStatus(JoinApplicationStatus.fromCode(statusStr));
         }
         Timestamp createdTs = rs.getTimestamp("created_at");
         if (createdTs != null) {
