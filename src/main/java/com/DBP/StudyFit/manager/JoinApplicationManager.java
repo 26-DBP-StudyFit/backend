@@ -9,7 +9,6 @@ import com.DBP.StudyFit.domain.TeamMemberRole;
 import com.DBP.StudyFit.exception.NotTeamLeaderException;
 import org.springframework.stereotype.Service;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;

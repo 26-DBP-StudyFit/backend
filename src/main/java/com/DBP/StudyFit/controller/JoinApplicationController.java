@@ -41,7 +41,7 @@ public class JoinApplicationController {
                                      RedirectAttributes ra) {
 
         if (user == null) {
-            return "redirect:/user/loginForm";
+            return "redirect:/user/login";
         }
 
         try {
@@ -85,12 +85,12 @@ public class JoinApplicationController {
     public String showApplicationDetail(@PathVariable int teamId, @PathVariable int applicationId,
                                         @SessionAttribute(name = SESSION_USER, required = false) User user,
                                         Model model) {
-        if (user == null) return "redirect:/user/loginForm";
+        if (user == null) return "redirect:/user/login";
 
         try {
             model.addAttribute("application",
                     joinApplicationManager.getApplicationDetail(teamId, applicationId, user.getUserId()));
-        } catch (IllegalStateException e) {
+        } catch (NotTeamLeaderException | IllegalStateException e) {
             return "redirect:/teams/" + teamId;
         }
 
