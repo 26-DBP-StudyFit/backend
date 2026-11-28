@@ -20,6 +20,8 @@ public class JoinApplicationController {
         this.joinApplicationManager = joinApplicationManager;
     }
 
+
+    //팀 가입 신청
     @ResponseBody
     @PostMapping("/teams/{teamId}/applications")
     public ResponseEntity<String> createApplication(@PathVariable int teamId, @RequestParam int userId) {
@@ -50,6 +52,31 @@ public class JoinApplicationController {
             return "redirect:/teams/" + teamId; // 성공하면 팀 홈으로 돌아감
         } catch (NotTeamLeaderException e) {
             ra.addFlashAttribute("errorMessage", "팀장만 승인할 수 있습니다.");
+        } catch (IllegalStateException e) {
+            ra.addFlashAttribute("errorMessage", e.getMessage());
+        } catch (RuntimeException e) {
+            ra.addFlashAttribute("errorMessage", "처리 중 오류가 발생했습니다.");
+        }
+
+        return "redirect:/teams/" + teamId + "/applications/" + applicationId;
+    }
+
+    // 팀 가입 거절
+    @PostMapping("/teams/{teamId}/applications/{applicationId}/reject")
+    public String rejectApplication(@PathVariable int teamId, @PathVariable int applicationId,
+                                    @SessionAttribute(name = SESSION_USER, required = false) User user,
+                                    RedirectAttributes ra) {
+
+        if (user == null) {
+            return "redirect:/user/loginForm";
+        }
+
+        try {
+            joinApplicationManager.rejectApplication(teamId, applicationId, user.getUserId());
+            ra.addFlashAttribute("message", "가입 요청을 거절했습니다.");
+            return "redirect:/teams/" + teamId; // 성공하면 팀 홈으로 돌아감
+        } catch (NotTeamLeaderException e) {
+            ra.addFlashAttribute("errorMessage", "팀장만 거절할 수 있습니다.");
         } catch (IllegalStateException e) {
             ra.addFlashAttribute("errorMessage", e.getMessage());
         } catch (RuntimeException e) {

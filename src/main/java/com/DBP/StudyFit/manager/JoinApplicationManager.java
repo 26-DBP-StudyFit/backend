@@ -5,11 +5,9 @@ import com.DBP.StudyFit.dao.JoinApplicationDAO;
 import com.DBP.StudyFit.dao.TeamMemberDAO;
 import com.DBP.StudyFit.domain.JoinApplication;
 import com.DBP.StudyFit.domain.JoinApplicationStatus;
-import com.DBP.StudyFit.domain.TeamMemberRole;
 import com.DBP.StudyFit.exception.NotTeamLeaderException;
 import org.springframework.stereotype.Service;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -25,7 +23,6 @@ public class JoinApplicationManager {
     }
 
     // 팀 가입 신청
-    // Manager
     public void createApplication(int teamId, int userId) {
         if (joinApplicationDAO.existingPendingApplication(teamId, userId))
             throw new IllegalStateException("이미 가입 신청한 팀입니다");
@@ -42,25 +39,23 @@ public class JoinApplicationManager {
     public void approveApplication(int teamId, int applicationId, int userId)
             throws NotTeamLeaderException {
 
-        JoinApplication app = getApplicationDetail(teamId, applicationId, userId);
-        if (app.getStatus() != JoinApplicationStatus.PENDING)
+        // 팀장인 지 확인도 함
+        JoinApplication application = getApplicationDetail(teamId, applicationId, userId);
+        if (application.getStatus() != JoinApplicationStatus.PENDING)
             throw new IllegalStateException("이미 처리된 신청입니다.");
 
         try (Connection conn = new JDBCUtil().getConnection()) {
             conn.setAutoCommit(false);
             try {
-                if (!teamMemberDAO.isLeader(conn, teamId, userId))
-                    throw new NotTeamLeaderException("팀장만 승인할 수 있습니다.");
-
                 int updated = joinApplicationDAO.updateStatus(conn, applicationId,
                         JoinApplicationStatus.APPROVED.getCode());
                 if (updated == 0)
                     throw new IllegalStateException("이미 처리된 신청입니다.");
 
-                teamMemberDAO.insertMember(conn, teamId, app.getUserId());
+                teamMemberDAO.insertMember(conn, teamId, application.getUserId());
                 conn.commit();   // 둘 다 성공 → 반영
 
-            } catch (NotTeamLeaderException | IllegalStateException e) {
+            } catch (IllegalStateException e) {
                 conn.rollback();
                 throw e;         // 컨트롤러가 받아서 메시지 표시
             } catch (SQLException e) {
@@ -72,26 +67,29 @@ public class JoinApplicationManager {
         }
     }
 
+    //팀 가입 거절
+    public void rejectApplication(int teamId, int applicationId, int userId) {
+        // 신청 존재·팀·팀장 확인
+        JoinApplication application = getApplicationDetail(teamId, applicationId, userId);
+        if (application.getStatus() != JoinApplicationStatus.PENDING)
+            throw new IllegalStateException("이미 처리된 신청입니다.");
+
+        // 승인과는 다른 updateStatus 호출
+        int updated = joinApplicationDAO.updateStatus(applicationId,
+                JoinApplicationStatus.REJECTED.getCode());
+        if (updated == 0)   // 그 사이 다른 요청이 먼저 처리한 경우
+            throw new IllegalStateException("이미 처리된 신청입니다.");
+    }
+
     // 가입 신청 상세 조회
     public JoinApplication getApplicationDetail(int teamId, int applicationId, int userId) {
         JoinApplication application = joinApplicationDAO.findApplicationById(applicationId);
         if (application == null || application.getTeamId() != teamId)
             throw new IllegalStateException("존재하지 않는 신청입니다.");
 
-        if (!isLeader(teamId, userId))
-            throw new NotTeamLeaderException("신청 내용을 볼 권한이 없습니다.");
+        if (!teamMemberDAO.isLeader(teamId, userId))
+            throw new NotTeamLeaderException("팀장만 가입 신청을 확인·처리할 수 있습니다.");
 
         return application;
-    }
-
-    // 해당 팀의 팀장인지 확인
-    private boolean isLeader(int teamId, int userId) {
-        try (Connection conn = new JDBCUtil().getConnection()) {
-            return teamMemberDAO.findByTeamIdAndMemberId(conn, teamId, userId)
-                    .map(member -> member.getRole() == TeamMemberRole.LEADER)
-                    .orElse(false);
-        } catch (SQLException e) {
-            throw new IllegalStateException("팀장 확인 중 오류가 발생했습니다.", e);
-        }
     }
 }
