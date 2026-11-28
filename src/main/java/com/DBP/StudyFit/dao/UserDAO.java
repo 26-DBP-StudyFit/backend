@@ -1,17 +1,17 @@
 package com.DBP.StudyFit.dao;
 import com.DBP.StudyFit.JDBCUtil;
 import com.DBP.StudyFit.domain.User;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 
+// Spring이 객체를 하나만 만들어 관리하므로, 요청끼리 섞이지 않도록
+// JDBCUtil은 필드에 두지 않고 메서드마다 새로 만든다.
+@Repository
 public class UserDAO {
-    private JDBCUtil jdbcUtil = null;	// JDBCUtil 필드 선언
-
-    public UserDAO() {				// 생성자
-        jdbcUtil = new JDBCUtil();		// JDBCUtil 객체 생성
-    }
 
     public int create(User user) {
+        JDBCUtil jdbcUtil = new JDBCUtil();
         /* 회원 저장 (회원가입)
          시퀀스 seq_member로 새 회원번호를 얻은 후 MEMBER 테이블에 INSERT함.
          생성된 회원번호를 반환함 (실패 시 -1을 반환)
@@ -46,6 +46,7 @@ public class UserDAO {
     }
 
     public User findUserById(int userId) {
+        JDBCUtil jdbcUtil = new JDBCUtil();
         /* 마이페이지 조회
          * 검색 결과를 User 객체에 저장해서 반환함 (검색 결과가 없을 경우 null을 반환)
          */
@@ -82,6 +83,7 @@ public class UserDAO {
     }
 
     public User findUserByEmail(String email) {
+        JDBCUtil jdbcUtil = new JDBCUtil();
         /* 로그인, 이메일을 회원 아이디로 사용
          * 검색 결과를 User 객체에 저장해서 반환함 (검색 결과가 없을 경우 null을 반환)
          */
@@ -118,6 +120,7 @@ public class UserDAO {
     }
 
     public boolean existingEmail(String email) {
+        JDBCUtil jdbcUtil = new JDBCUtil();
         /* 이메일(아이디) 중복 여부 검사 (회원가입)
          * 이미 존재하면 true, 없으면 false를 반환함
          */
@@ -137,6 +140,7 @@ public class UserDAO {
     }
 
     public boolean existingStudentId(String studentId) {
+        JDBCUtil jdbcUtil = new JDBCUtil();
         /* 학번 중복 여부 검사 (회원가입)
          * 이미 존재하면 true, 없으면 false를 반환함
          */
@@ -156,6 +160,7 @@ public class UserDAO {
     }
 
     public int update(User user) {
+        JDBCUtil jdbcUtil = new JDBCUtil();
         /* 회원 기본 정보(이름, 성별, 전공) 수정 (프로필 수정)
          * 수정된 행 수를 반환함 (실패 시 0을 반환)
          */
@@ -180,6 +185,7 @@ public class UserDAO {
     }
 
     public int changePassword(int userId, String newPassword) {
+        JDBCUtil jdbcUtil = new JDBCUtil();
         /* 비밀번호 변경 (프로필 수정)
          * 수정된 행 수를 반환함 (실패 시 0을 반환)
          */
@@ -200,6 +206,7 @@ public class UserDAO {
     }
 
     public int withdraw(int userId) {
+        JDBCUtil jdbcUtil = new JDBCUtil();
         /* 회원 탈퇴: 행을 삭제하지 않고 status를 'WITHDRAWN'으로 변경 (비활성화)
          * 수정된 행 수를 반환함 (실패 시 0을 반환)
          */
@@ -220,6 +227,7 @@ public class UserDAO {
     }
 
     public int remove(int userId) {
+        JDBCUtil jdbcUtil = new JDBCUtil();
         /* 회원 행 실제 삭제 (테스트 데이터 정리용)
          * 삭제된 행 수를 반환함 (실패 시 0을 반환)
          */
