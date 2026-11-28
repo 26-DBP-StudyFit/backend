@@ -23,15 +23,17 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.DBP.StudyFit.domain.User;
 import com.DBP.StudyFit.dto.AvailabilityForm;
+import com.DBP.StudyFit.dto.CommonAvailabilityResult;
 import com.DBP.StudyFit.exception.NotTeamMemberException;
 import com.DBP.StudyFit.manager.AvailabilityManager;
 import com.DBP.StudyFit.manager.TeamManager;
 
 /**
- * UC-D-01 활동 가능 시간 조회·등록·수정 (FR-D-01).
+ * UC-D-01 활동 가능 시간 조회·등록·수정 (FR-D-01), UC-D-02 팀 공통 가능 시간 계산·시각화 (FR-D-02).
  *
  *  GET  /availability/edit?teamId=   편집 화면 (기존값 표시, 없으면 빈 폼)
  *  POST /availability/save           저장 → 성공 시 /availability/edit?teamId= 로 redirect
+ *  GET  /availability/common?teamId= 팀 공통 가능 시간 계산·시각화 (팀원)
  *
  * [Spring 사용 부분] @Controller, @RequestMapping, @GetMapping, @PostMapping, @ModelAttribute,
  *                    @RequestParam, @SessionAttribute, @ExceptionHandler (기본 MVC 기능만 사용)
@@ -41,7 +43,7 @@ import com.DBP.StudyFit.manager.TeamManager;
 public class AvailabilityController {
 
     /** 로그인 처리(UC-A-03)가 세션에 User 를 저장하는 키 */
-    private static final String SESSION_USER = "user";
+    private static final String SESSION_USER = "loginUser";
 
     private static final Logger log = LoggerFactory.getLogger(AvailabilityController.class);
 
@@ -118,6 +120,29 @@ public class AvailabilityController {
         redirectAttributes.addAttribute("teamId", teamId);
         redirectAttributes.addFlashAttribute("savedMessage", "활동 가능 시간이 저장되었습니다.");
         return "redirect:/availability/edit";
+    }
+
+    // ---------------------------------------------------------------- 공통 가능 시간 (FR-D-02)
+
+    @GetMapping("/common")
+    public String common(@RequestParam Long teamId,
+                         @SessionAttribute(name = SESSION_USER, required = false) User user,
+                         Model model) {
+        if (user == null) {
+            return "redirect:/user/login";
+        }
+        long userId = user.getUserId();
+
+        teamManager.validateMember(teamId, userId);
+        CommonAvailabilityResult result = availabilityManager.calculateCommonAvailability(teamId);
+
+        // 상태별 화면(AVAILABLE / NO_COMMON_TIME / INCOMPLETE)은 calculationStatus 로 구분한다.
+        model.addAttribute("teamId", teamId);
+        model.addAttribute("commonTimeSlots", result.getCommonTimeSlots());
+        model.addAttribute("missingMemberIds", result.getMissingMemberIds());
+        model.addAttribute("calculationStatus", result.getCalculationStatus());
+        model.addAttribute("message", result.getMessage());
+        return "availability/common";
     }
 
     // ---------------------------------------------------------------- 예외 처리
