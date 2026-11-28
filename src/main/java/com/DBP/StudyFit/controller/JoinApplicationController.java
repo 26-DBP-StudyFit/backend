@@ -73,7 +73,7 @@ public class JoinApplicationController {
                                     RedirectAttributes ra) {
 
         if (user == null) {
-            return "redirect:/user/loginForm";
+            return "redirect:/user/login";
         }
 
         try {
