@@ -14,7 +14,7 @@ public class JoinApplicationController {
 
     private final JoinApplicationManager joinApplicationManager;
 
-    private static final String SESSION_USER = "user";
+    private static final String SESSION_USER = "loginUser";
 
     public JoinApplicationController(JoinApplicationManager joinApplicationManager) {
         this.joinApplicationManager = joinApplicationManager;
