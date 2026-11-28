@@ -2,17 +2,17 @@ package com.DBP.StudyFit.dao;
 import com.DBP.StudyFit.JDBCUtil;
 import com.DBP.StudyFit.domain.StudyProfile;
 import com.DBP.StudyFit.domain.StudyType;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 
+// Spring이 객체를 하나만 만들어 관리하므로, 요청끼리 섞이지 않도록
+// JDBCUtil은 필드에 두지 않고 메서드마다 새로 만든다.
+@Repository
 public class StudyProfileDAO {
-    private JDBCUtil jdbcUtil = null;	// JDBCUtil 필드 선언
-
-    public StudyProfileDAO() {			// 생성자
-        jdbcUtil = new JDBCUtil();		// JDBCUtil 객체 생성
-    }
 
     public int create(StudyProfile profile) {
+        JDBCUtil jdbcUtil = new JDBCUtil();
         /* 첫 설문 결과 저장 (학습 성향 설문)
          * updated_at은 DEFAULT SYSDATE로 자동 입력됨
          * 저장된 행 수를 반환함 (실패 시 0을 반환)
@@ -41,6 +41,7 @@ public class StudyProfileDAO {
     }
 
     public StudyProfile findProfileByUserId(int userId) {
+        JDBCUtil jdbcUtil = new JDBCUtil();
         /* 회원번호로 설문 결과 조회 (마이페이지)
          * 검색 결과를 StudyProfile 객체에 저장해서 반환함 (검색 결과가 없을 경우 null을 반환)
          */
@@ -79,6 +80,7 @@ public class StudyProfileDAO {
     }
 
     public int update(StudyProfile profile) {
+        JDBCUtil jdbcUtil = new JDBCUtil();
         /* 설문 재검사: 응답과 유형을 덮어쓰고 갱신 일시 기록
          * 수정된 행 수를 반환함 (실패 시 0을 반환)
          */
@@ -107,6 +109,7 @@ public class StudyProfileDAO {
     }
 
     public int remove(int userId) {
+        JDBCUtil jdbcUtil = new JDBCUtil();
         /* 설문 결과 실제 삭제 (테스트 데이터 정리용)
          * member 행을 지우기 전에 먼저 호출해야 FK 오류가 나지 않음
          * 삭제된 행 수를 반환함 (실패 시 0을 반환)
