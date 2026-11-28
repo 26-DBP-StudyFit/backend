@@ -51,7 +51,7 @@ public class UserDAO {
          * 검색 결과를 User 객체에 저장해서 반환함 (검색 결과가 없을 경우 null을 반환)
          */
         StringBuffer query = new StringBuffer();
-        query.append("SELECT member_id, email, password_hash, member_name, gender, major, student_id, status, created_at ");
+        query.append("SELECT member_id, email, password_hash, member_name, gender, major, student_id, status, created_at, temperature ");
         query.append("FROM member ");
         query.append("WHERE member_id = ?");
 
@@ -71,6 +71,9 @@ public class UserDAO {
                 user.setStudentId(rs.getString("student_id"));
                 user.setStatus(rs.getString("status"));
                 user.setCreatedAt(rs.getTimestamp("created_at"));
+                // getDouble은 NULL을 0.0으로 바꾸므로, NULL이면 null 그대로 넣음
+                double temperature = rs.getDouble("temperature");
+                user.setTemperature(rs.wasNull() ? null : temperature);
 
                 return user;
             }
@@ -88,7 +91,7 @@ public class UserDAO {
          * 검색 결과를 User 객체에 저장해서 반환함 (검색 결과가 없을 경우 null을 반환)
          */
         StringBuffer query = new StringBuffer();
-        query.append("SELECT member_id, email, password_hash, member_name, gender, major, student_id, status, created_at ");
+        query.append("SELECT member_id, email, password_hash, member_name, gender, major, student_id, status, created_at, temperature ");
         query.append("FROM member ");
         query.append("WHERE email = ?");
 
@@ -108,6 +111,9 @@ public class UserDAO {
                 user.setStudentId(rs.getString("student_id"));
                 user.setStatus(rs.getString("status"));
                 user.setCreatedAt(rs.getTimestamp("created_at"));
+                // getDouble은 NULL을 0.0으로 바꾸므로, NULL이면 null 그대로 넣음
+                double temperature = rs.getDouble("temperature");
+                user.setTemperature(rs.wasNull() ? null : temperature);
 
                 return user;
             }
