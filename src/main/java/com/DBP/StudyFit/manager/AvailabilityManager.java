@@ -57,7 +57,7 @@ public class AvailabilityManager {
      *
      * @throws IllegalStateException DAO 가 DB 오류로 null 을 돌려준 경우
      */
-    public AvailabilityForm getAvailability(long teamId, long userId) {
+    public AvailabilityForm getAvailability(Integer teamId, long userId) {
         List<Availability> saved = availabilityDAO.findByTeamAndUser(teamId, userId);
         if (saved == null) {
             throw new IllegalStateException("활동 가능 시간 조회에 실패했습니다.");
@@ -84,7 +84,7 @@ public class AvailabilityManager {
      * @return 입력 오류 맵. 비어 있으면 저장 성공. 오류가 있으면 DAO 를 호출하지 않았다.
      * @throws IllegalStateException DAO 가 저장 실패(false)를 돌려준 경우 (이미 롤백된 상태)
      */
-    public Map<String, String> saveAvailability(long teamId, long userId, List<AvailabilityInput> inputs) {
+    public Map<String, String> saveAvailability(Integer teamId, long userId, List<AvailabilityInput> inputs) {
         Map<String, String> errors = new LinkedHashMap<>();
         List<Availability> slots = validateAndConvert(inputs, errors);
         if (!errors.isEmpty()) {
@@ -111,7 +111,7 @@ public class AvailabilityManager {
      *
      * @throws IllegalStateException DAO 가 DB 오류로 null 을 돌려준 경우
      */
-    public CommonAvailabilityResult calculateCommonAvailability(long teamId) {
+    public CommonAvailabilityResult calculateCommonAvailability(Integer teamId) {
         List<Long> memberIds = teamMemberDAO.findMemberIdsByTeamId(teamId);
         if (memberIds == null) {
             throw new IllegalStateException("팀원 조회에 실패했습니다.");

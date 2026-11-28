@@ -43,18 +43,18 @@ public class TeamMemberDAO {
                     "VALUES (seq_team_member.NEXTVAL, ?, ?, ?, SYSTIMESTAMP)";
 
     /** 팀 생성 직후 생성자를 팀장으로 등록한다. 반환값은 삽입 행 수이다. */
-    public int insertLeader(Connection conn, long teamId, long memberId)
+    public int insertLeader(Connection conn, Integer teamId, long memberId)
             throws SQLException {
         return insert(conn, teamId, memberId, TeamMemberRole.LEADER);
     }
 
     /** 가입 승인 처리 중 신청자를 일반 팀원으로 등록한다. */
-    public int insertMember(Connection conn, long teamId, long memberId)
+    public int insertMember(Connection conn, Integer teamId, long memberId)
             throws SQLException {
         return insert(conn, teamId, memberId, TeamMemberRole.MEMBER);
     }
 
-    private int insert(Connection conn, long teamId, long memberId, TeamMemberRole role)
+    private int insert(Connection conn, Integer teamId, long memberId, TeamMemberRole role)
             throws SQLException {
         try (PreparedStatement ps = conn.prepareStatement(INSERT_SQL)) {
             ps.setLong(1, teamId);
@@ -66,7 +66,7 @@ public class TeamMemberDAO {
 
     /** 특정 팀에서 회원의 소속 정보를 조회한다. 없으면 Optional.empty(). */
     public Optional<TeamMember> findByTeamIdAndMemberId(
-            Connection conn, long teamId, long memberId) throws SQLException {
+            Connection conn, Integer teamId, long memberId) throws SQLException {
         String sql = "SELECT team_id, member_id, role, joined_at " +
                 "FROM team_member WHERE team_id = ? AND member_id = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -79,7 +79,7 @@ public class TeamMemberDAO {
     }
 
     /** 팀원 목록(회원 이름 포함)을 팀장 우선, 가입 일시순으로 조회한다. user.name 이 채워진다. */
-    public List<TeamMember> findMembersByTeamId(Connection conn, long teamId)
+    public List<TeamMember> findMembersByTeamId(Connection conn, Integer teamId)
             throws SQLException {
         String sql =
                 "SELECT tm.team_id, tm.member_id, tm.role, tm.joined_at, m.member_name " +
@@ -128,7 +128,7 @@ public class TeamMemberDAO {
     }
 
     /** 가입 여부 사전 확인용. 중복 등록 최종 방지는 DB UNIQUE 제약이 담당한다. */
-    public boolean existsByTeamIdAndMemberId(Connection conn, long teamId, long memberId)
+    public boolean existsByTeamIdAndMemberId(Connection conn, Integer teamId, long memberId)
             throws SQLException {
         String sql = "SELECT COUNT(*) FROM team_member " +
                 "WHERE team_id = ? AND member_id = ?";
@@ -171,7 +171,7 @@ public class TeamMemberDAO {
         }
     }
 
-    private int countMembership(Connection conn, String sql, long teamId, long memberId)
+    private int countMembership(Connection conn, String sql, Integer teamId, long memberId)
             throws SQLException {
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setLong(1, teamId);
@@ -200,7 +200,7 @@ public class TeamMemberDAO {
     }
 
     // 구성원이면 소속 정보를, 아니면(또는 DB 오류면) Optional.empty() 를 반환한다.
-    public Optional<TeamMember> findByTeamIdAndMemberId(long teamId, long memberId) {
+    public Optional<TeamMember> findByTeamIdAndMemberId(Integer teamId, long memberId) {
         JDBCUtil jdbcUtil = new JDBCUtil();   // 메서드마다 새로 만든다 (싱글톤 DAO 필드에 두지 않는다)
         String sql = "SELECT team_id, member_id, role, joined_at " +
                 "FROM team_member WHERE team_id = ? AND member_id = ?";
@@ -221,7 +221,7 @@ public class TeamMemberDAO {
 
      // 팀 구성원의 회원 ID 목록을 가입 순으로 조회한다. (공통 가능 시간의 미등록 팀원 판별용)
      // 구성원이 없으면 빈 리스트, DB 오류가 나면 null 을 반환한다.
-    public List<Long> findMemberIdsByTeamId(long teamId) {
+    public List<Long> findMemberIdsByTeamId(Integer teamId) {
         JDBCUtil jdbcUtil = new JDBCUtil();   // 메서드마다 새로 만든다
         String sql = "SELECT member_id FROM team_member WHERE team_id = ? ORDER BY joined_at, member_id";
         jdbcUtil.setSqlAndParameters(sql, new Object[] {teamId});

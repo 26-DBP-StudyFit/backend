@@ -68,7 +68,7 @@ public class AvailabilityController {
     // ---------------------------------------------------------------- 편집 화면 조회
 
     @GetMapping("/edit")
-    public String edit(@RequestParam Long teamId,
+    public String edit(@RequestParam Integer teamId,
                        @SessionAttribute(name = SESSION_USER, required = false) User user,
                        Model model) {
         if (user == null) {
@@ -87,7 +87,7 @@ public class AvailabilityController {
     // ---------------------------------------------------------------- 저장
 
     @PostMapping("/save")
-    public String save(@RequestParam Long teamId,
+    public String save(@RequestParam Integer teamId,
                        @ModelAttribute("form") AvailabilityForm form,
                        @SessionAttribute(name = SESSION_USER, required = false) User user,
                        Model model, RedirectAttributes redirectAttributes) {
@@ -125,7 +125,7 @@ public class AvailabilityController {
     // ---------------------------------------------------------------- 공통 가능 시간 (FR-D-02)
 
     @GetMapping("/common")
-    public String common(@RequestParam Long teamId,
+    public String common(@RequestParam Integer teamId,
                          @SessionAttribute(name = SESSION_USER, required = false) User user,
                          Model model) {
         if (user == null) {

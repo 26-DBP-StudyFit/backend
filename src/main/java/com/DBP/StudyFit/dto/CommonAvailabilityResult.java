@@ -10,13 +10,13 @@ import java.util.List;
  // NO_COMMON_TIME : commonTimeSlots, missingMemberIds 모두 빈 목록
  // INCOMPLETE     : commonTimeSlots 는 빈 목록, missingMemberIds 에 미등록 팀원
 public class CommonAvailabilityResult {
-    private final Long teamId;
+    private final Integer teamId;
     private final List<CommonTimeSlot> commonTimeSlots;
     private final List<Long> missingMemberIds;
     private final CommonAvailabilityStatus calculationStatus;
     private final String message;
 
-    public CommonAvailabilityResult(Long teamId, List<CommonTimeSlot> commonTimeSlots,
+    public CommonAvailabilityResult(Integer teamId, List<CommonTimeSlot> commonTimeSlots,
                                     List<Long> missingMemberIds,
                                     CommonAvailabilityStatus calculationStatus, String message) {
         this.teamId = teamId;
@@ -26,7 +26,7 @@ public class CommonAvailabilityResult {
         this.message = message;
     }
 
-    public Long getTeamId() {
+    public Integer getTeamId() {
         return teamId;
     }
 
