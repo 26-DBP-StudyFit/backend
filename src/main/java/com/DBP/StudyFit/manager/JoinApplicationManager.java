@@ -23,7 +23,6 @@ public class JoinApplicationManager {
     }
 
     // 팀 가입 신청
-    // Manager
     public void createApplication(int teamId, int userId) {
         if (joinApplicationDAO.existingPendingApplication(teamId, userId))
             throw new IllegalStateException("이미 가입 신청한 팀입니다");
@@ -66,6 +65,20 @@ public class JoinApplicationManager {
         } catch (SQLException e) {
             throw new RuntimeException("DB 연결 실패", e);
         }
+    }
+
+    //팀 가입 거절
+    public void rejectApplication(int teamId, int applicationId, int userId) {
+        // 신청 존재·팀·팀장 확인
+        JoinApplication application = getApplicationDetail(teamId, applicationId, userId);
+        if (application.getStatus() != JoinApplicationStatus.PENDING)
+            throw new IllegalStateException("이미 처리된 신청입니다.");
+
+        // 승인과는 다른 updateStatus 호출
+        int updated = joinApplicationDAO.updateStatus(applicationId,
+                JoinApplicationStatus.REJECTED.getCode());
+        if (updated == 0)   // 그 사이 다른 요청이 먼저 처리한 경우
+            throw new IllegalStateException("이미 처리된 신청입니다.");
     }
 
     // 가입 신청 상세 조회
