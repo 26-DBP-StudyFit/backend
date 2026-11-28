@@ -2,9 +2,12 @@ package com.DBP.StudyFit.manager;
 
 import com.DBP.StudyFit.JDBCUtil;
 import com.DBP.StudyFit.dao.JoinApplicationDAO;
+import com.DBP.StudyFit.dao.TeamDAO;
 import com.DBP.StudyFit.dao.TeamMemberDAO;
 import com.DBP.StudyFit.domain.JoinApplication;
 import com.DBP.StudyFit.domain.JoinApplicationStatus;
+import com.DBP.StudyFit.domain.Team;
+import com.DBP.StudyFit.dto.ApplicationListDTO;
 import com.DBP.StudyFit.exception.NotTeamLeaderException;
 import org.springframework.stereotype.Service;
 
@@ -17,16 +20,33 @@ public class JoinApplicationManager {
 
     private final JoinApplicationDAO joinApplicationDAO;
     private final TeamMemberDAO teamMemberDAO;
+    private final TeamDAO teamDAO;
 
-    public JoinApplicationManager(JoinApplicationDAO joinApplicationDAO, TeamMemberDAO teamMemberDAO) {
+    public JoinApplicationManager(JoinApplicationDAO joinApplicationDAO,
+                                  TeamMemberDAO teamMemberDAO, TeamDAO teamDAO) {
         this.joinApplicationDAO = joinApplicationDAO;
         this.teamMemberDAO = teamMemberDAO;
+        this.teamDAO = teamDAO;
     }
 
     // 팀 가입 신청
     public void createApplication(int teamId, int userId) {
+        Team team = teamDAO.findTeamById(teamId);
+        if (team == null)
+            throw new IllegalStateException("존재하지 않는 팀입니다.");
+
+        try (Connection conn = new JDBCUtil().getConnection()) {
+            if (teamMemberDAO.existsByTeamIdAndMemberId(conn, teamId, userId))
+                throw new IllegalStateException("이미 가입된 팀입니다.");
+
+            if (teamMemberDAO.countByTeamId(conn, teamId) >= team.getRecruitCount())
+                throw new IllegalStateException("모집 인원이 마감된 팀입니다.");
+        } catch (SQLException e) {
+            throw new RuntimeException("가입 신청 확인 중 오류가 발생했습니다.", e);
+        }
+
         if (joinApplicationDAO.existingPendingApplication(teamId, userId))
-            throw new IllegalStateException("이미 가입 신청한 팀입니다");
+            throw new IllegalStateException("이미 가입 신청한 팀입니다.");
 
         JoinApplication application = new JoinApplication();
         application.setTeamId(teamId);
@@ -48,6 +68,12 @@ public class JoinApplicationManager {
         try (Connection conn = new JDBCUtil().getConnection()) {
             conn.setAutoCommit(false);
             try {
+                Team team = teamDAO.findTeamById(teamId);
+                if (team == null)
+                    throw new IllegalStateException("존재하지 않는 팀입니다.");
+                if (teamMemberDAO.countByTeamId(conn, teamId) >= team.getRecruitCount())
+                    throw new IllegalStateException("모집 인원이 마감되어 승인할 수 없습니다.");
+
                 int updated = joinApplicationDAO.updateStatus(conn, applicationId,
                         JoinApplicationStatus.APPROVED.getCode());
                 if (updated == 0)
@@ -68,6 +94,17 @@ public class JoinApplicationManager {
         }
     }
 
+    // 받은 가입 신청 목록 조회
+    public List<ApplicationListDTO> getPendingApplications(int teamId, int userId) {
+        if (!teamMemberDAO.isLeader(teamId, userId))
+            throw new NotTeamLeaderException("팀장만 가입 신청 목록을 확인할 수 있습니다.");
+
+        List<ApplicationListDTO> list = joinApplicationDAO.findPendingApplicationsWithApplicant(teamId);
+        if (list == null)
+            throw new IllegalStateException("가입 신청 목록 조회 중 오류가 발생했습니다.");
+        return list;
+    }
+
     //팀 가입 거절
     public void rejectApplication(int teamId, int applicationId, int userId) {
         // 신청 존재·팀·팀장 확인
@@ -75,7 +112,6 @@ public class JoinApplicationManager {
         if (application.getStatus() != JoinApplicationStatus.PENDING)
             throw new IllegalStateException("이미 처리된 신청입니다.");
 
-        // 승인과는 다른 updateStatus 호출
         int updated = joinApplicationDAO.updateStatus(applicationId,
                 JoinApplicationStatus.REJECTED.getCode());
         if (updated == 0)   // 그 사이 다른 요청이 먼저 처리한 경우

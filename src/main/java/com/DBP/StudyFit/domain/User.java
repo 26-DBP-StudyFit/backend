@@ -2,7 +2,9 @@ package com.DBP.StudyFit.domain;
 import java.util.Date;
 
 public class User {
-    // 필드: 회원번호, 이메일(로그인 아이디), 비밀번호, 이름, 성별, 전공, 학번, 계정상태, 가입일시
+    public static final double DEFAULT_TEMPERATURE = 36.5;
+
+    // 필드: 회원번호, 이메일(로그인 아이디), 비밀번호, 이름, 성별, 전공, 학번, 계정상태, 가입일시, 온도
     // MEMBER 테이블 컬럼과 대응: userId → member_id, password → password_hash, name → member_name
 
     private int userId;
@@ -12,8 +14,9 @@ public class User {
     private String gender;      // 'M' 또는 'F'
     private String major;
     private String studentId;
-    private String status;      // 'ACTIVE'(정상) 또는 'W'(탈퇴)
+    private String status;      // 'A'(정상) 또는 'W'(탈퇴)
     private Date createdAt;
+    private Double temperature = DEFAULT_TEMPERATURE;  // 회원 온도 (가입 시 36.5, null 허용)
 
     public User() {
 
@@ -100,10 +103,18 @@ public class User {
         this.createdAt = createdAt;
     }
 
+    public Double getTemperature() {
+        return temperature;
+    }
+
+    public void setTemperature(Double temperature) {
+        this.temperature = temperature;
+    }
+
     @Override
     public String toString() {
         return userId + ", " + email + ", " + name + ", " + gender + ", " + major + ", "
-                + studentId + ", " + status + ", " + createdAt;
+                + studentId + ", " + status + ", " + createdAt + ", " + temperature;
     }
 
 }

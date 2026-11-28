@@ -7,6 +7,8 @@ import java.util.List;
 import com.DBP.StudyFit.domain.JoinApplication;
 import com.DBP.StudyFit.JDBCUtil;
 import com.DBP.StudyFit.domain.JoinApplicationStatus;
+import com.DBP.StudyFit.domain.StudyType;
+import com.DBP.StudyFit.dto.ApplicationListDTO;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -295,5 +297,47 @@ public class JoinApplicationDAO {
         }
 
         return application;
+    }
+
+    // 팀의 대기 중 신청 목록 조회
+    // 신청 번호, 팀 번호, 신청자 회원 번호, 신청자 이름, 학습 유형, 신청 일시를 담아서 반환
+    public List<ApplicationListDTO> findPendingApplicationsWithApplicant(int teamId) {
+        JDBCUtil jdbcUtil = new JDBCUtil();
+
+        StringBuffer query = new StringBuffer();
+        query.append("SELECT ja.application_id, ja.team_id, ja.member_id, ja.created_at, ");
+        query.append("       m.member_name, sp.type_code ");
+        query.append("FROM join_application ja ");
+        query.append("JOIN member m ON ja.member_id = m.member_id ");
+        query.append("LEFT JOIN study_profile sp ON ja.member_id = sp.member_id ");
+        query.append("WHERE ja.team_id = ? AND ja.status = 'P' ");
+        query.append("ORDER BY ja.created_at DESC");
+
+        jdbcUtil.setSqlAndParameters(query.toString(), new Object[] {teamId});
+
+        try {
+            ResultSet rs = jdbcUtil.executeQuery();
+            List<ApplicationListDTO> list = new ArrayList<>();
+            while (rs.next()) {
+                ApplicationListDTO item = new ApplicationListDTO();
+                item.setApplicationId(rs.getInt("application_id"));
+                item.setTeamId(rs.getInt("team_id"));
+                item.setUserId(rs.getInt("member_id"));
+                item.setMemberName(rs.getString("member_name"));
+
+                StudyType type = StudyType.fromCode(rs.getString("type_code"));
+                item.setStudyTypeName(type != null ? type.getTypeName() : null);
+
+                Timestamp created = rs.getTimestamp("created_at");
+                if (created != null) item.setCreatedAt(created.toLocalDateTime());
+                list.add(item);
+            }
+            return list;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            jdbcUtil.close();
+        }
+        return null;
     }
 }
