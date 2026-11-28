@@ -7,11 +7,13 @@ import com.DBP.StudyFit.dao.TeamMemberDAO;
 import com.DBP.StudyFit.domain.JoinApplication;
 import com.DBP.StudyFit.domain.JoinApplicationStatus;
 import com.DBP.StudyFit.domain.Team;
+import com.DBP.StudyFit.dto.ApplicationListDTO;
 import com.DBP.StudyFit.exception.NotTeamLeaderException;
 import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 @Service
 public class JoinApplicationManager {
@@ -92,6 +94,17 @@ public class JoinApplicationManager {
         }
     }
 
+    // 받은 가입 신청 목록 조회
+    public List<ApplicationListDTO> getPendingApplications(int teamId, int userId) {
+        if (!teamMemberDAO.isLeader(teamId, userId))
+            throw new NotTeamLeaderException("팀장만 가입 신청 목록을 확인할 수 있습니다.");
+
+        List<ApplicationListDTO> list = joinApplicationDAO.findPendingApplicationsWithApplicant(teamId);
+        if (list == null)
+            throw new IllegalStateException("가입 신청 목록 조회 중 오류가 발생했습니다.");
+        return list;
+    }
+
     //팀 가입 거절
     public void rejectApplication(int teamId, int applicationId, int userId) {
         // 신청 존재·팀·팀장 확인
@@ -99,7 +112,6 @@ public class JoinApplicationManager {
         if (application.getStatus() != JoinApplicationStatus.PENDING)
             throw new IllegalStateException("이미 처리된 신청입니다.");
 
-        // 승인과는 다른 updateStatus 호출
         int updated = joinApplicationDAO.updateStatus(applicationId,
                 JoinApplicationStatus.REJECTED.getCode());
         if (updated == 0)   // 그 사이 다른 요청이 먼저 처리한 경우

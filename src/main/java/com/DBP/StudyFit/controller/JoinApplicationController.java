@@ -65,6 +65,26 @@ public class JoinApplicationController {
 
         return "redirect:/teams/" + teamId + "/applications/" + applicationId;
     }
+    // 받은 가입 신청 목록 조회
+    @GetMapping("/teams/{teamId}/applications")
+    public String listApplications(@PathVariable int teamId,
+                                   @SessionAttribute(name = SESSION_USER, required = false) User user,
+                                   Model model, RedirectAttributes ra) {
+        if (user == null) {
+            return "redirect:/user/login";
+        }
+
+        try {
+            model.addAttribute("applications",
+                    joinApplicationManager.getPendingApplications(teamId, user.getUserId()));
+            model.addAttribute("teamId", teamId);
+        } catch (NotTeamLeaderException | IllegalStateException e) {
+            ra.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/teams/" + teamId;
+        }
+
+        return "team/applicationList";
+    }
 
     // 팀 가입 거절
     @PostMapping("/teams/{teamId}/applications/{applicationId}/reject")
