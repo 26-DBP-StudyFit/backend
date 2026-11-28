@@ -27,20 +27,12 @@ import com.DBP.StudyFit.exception.NotTeamMemberException;
 import com.DBP.StudyFit.manager.AvailabilityManager;
 import com.DBP.StudyFit.manager.TeamManager;
 
-/**
- * UC-D-01 활동 가능 시간 조회·등록·수정 (FR-D-01).
- *
- *  GET  /availability/edit?teamId=   편집 화면 (기존값 표시, 없으면 빈 폼)
- *  POST /availability/save           저장 → 성공 시 /availability/edit?teamId= 로 redirect
- *
- * [Spring 사용 부분] @Controller, @RequestMapping, @GetMapping, @PostMapping, @ModelAttribute,
- *                    @RequestParam, @SessionAttribute, @ExceptionHandler (기본 MVC 기능만 사용)
- */
+
 @Controller
 @RequestMapping("/availability")
 public class AvailabilityController {
 
-    /** 로그인 처리(UC-A-03)가 세션에 User 를 저장하는 키 */
+    // 로그인 처리(UC-A-03)가 세션에 User 를 저장하는 키
     private static final String SESSION_USER = "user";
 
     private static final Logger log = LoggerFactory.getLogger(AvailabilityController.class);
@@ -53,7 +45,7 @@ public class AvailabilityController {
         this.availabilityManager = availabilityManager;
     }
 
-    /** 요일 선택 목록 (MONDAY → 월). View 가 select 를 만들 때 쓴다. */
+    // 요일 선택 목록 (MONDAY → 월). View 가 select 를 만들 때 쓴다.
     @ModelAttribute("dayOptions")
     public Map<String, String> dayOptions() {
         Map<String, String> options = new LinkedHashMap<>();
@@ -63,7 +55,6 @@ public class AvailabilityController {
         return options;
     }
 
-    // ---------------------------------------------------------------- 편집 화면 조회
 
     @GetMapping("/edit")
     public String edit(@RequestParam Long teamId,
@@ -81,8 +72,6 @@ public class AvailabilityController {
         model.addAttribute("form", form);
         return "availability/edit";
     }
-
-    // ---------------------------------------------------------------- 저장
 
     @PostMapping("/save")
     public String save(@RequestParam Long teamId,
@@ -120,8 +109,6 @@ public class AvailabilityController {
         return "redirect:/availability/edit";
     }
 
-    // ---------------------------------------------------------------- 예외 처리
-
     @ExceptionHandler(NotTeamMemberException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public String handleNotTeamMember(NotTeamMemberException e, Model model) {
@@ -130,7 +117,7 @@ public class AvailabilityController {
         return "error/message";
     }
 
-    /** 조회 중 DB 오류 (저장 오류는 save() 안에서 처리). SQL 상세는 노출하지 않는다. */
+    // 조회 중 DB 오류 (저장 오류는 save() 안에서 처리). SQL 상세는 노출하지 않는다.
     @ExceptionHandler(IllegalStateException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public String handleDbFailure(IllegalStateException e, Model model) {
