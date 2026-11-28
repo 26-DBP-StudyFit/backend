@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class JoinApplicationManager {
@@ -68,6 +70,23 @@ public class JoinApplicationManager {
         } catch (SQLException e) {
             throw new RuntimeException("DB 연결 실패", e);
         }
+    }
+
+    // 받은 가입 신청 목록 조회
+    public List<JoinApplication> getPendingApplications(int teamId, int userId) {
+        if (!teamMemberDAO.isLeader(teamId, userId))
+            throw new NotTeamLeaderException("팀장만 가입 신청 목록을 확인할 수 있습니다.");
+
+        List<JoinApplication> all = joinApplicationDAO.findApplicationsByTeamId(teamId);
+        if (all == null)   // DAO는 DB 오류 시 null을 반환
+            throw new IllegalStateException("가입 신청 목록 조회 중 오류가 발생했습니다.");
+
+        List<JoinApplication> pending = new ArrayList<>();
+        for (JoinApplication app : all) {
+            if (app.getStatus() == JoinApplicationStatus.PENDING)
+                pending.add(app);
+        }
+        return pending;
     }
 
     // 가입 신청 상세 조회
