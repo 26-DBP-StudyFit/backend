@@ -5,6 +5,7 @@ import com.DBP.StudyFit.dao.JoinApplicationDAO;
 import com.DBP.StudyFit.dao.TeamMemberDAO;
 import com.DBP.StudyFit.domain.JoinApplication;
 import com.DBP.StudyFit.domain.JoinApplicationStatus;
+import com.DBP.StudyFit.dto.ApplicationListDTO;
 import com.DBP.StudyFit.exception.NotTeamLeaderException;
 import org.springframework.stereotype.Service;
 
@@ -70,20 +71,14 @@ public class JoinApplicationManager {
     }
 
     // 받은 가입 신청 목록 조회
-    public List<JoinApplication> getPendingApplications(int teamId, int userId) {
+    public List<ApplicationListDTO> getPendingApplications(int teamId, int userId) {
         if (!teamMemberDAO.isLeader(teamId, userId))
             throw new NotTeamLeaderException("팀장만 가입 신청 목록을 확인할 수 있습니다.");
 
-        List<JoinApplication> all = joinApplicationDAO.findApplicationsByTeamId(teamId);
-        if (all == null)   // DAO는 DB 오류 시 null을 반환
+        List<ApplicationListDTO> list = joinApplicationDAO.findPendingApplicationsWithApplicant(teamId);
+        if (list == null)
             throw new IllegalStateException("가입 신청 목록 조회 중 오류가 발생했습니다.");
-
-        List<JoinApplication> pending = new ArrayList<>();
-        for (JoinApplication app : all) {
-            if (app.getStatus() == JoinApplicationStatus.PENDING)
-                pending.add(app);
-        }
-        return pending;
+        return list;
     }
 
     //팀 가입 거절
