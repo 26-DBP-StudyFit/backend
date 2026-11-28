@@ -21,12 +21,17 @@ public class JoinApplicationController {
     }
 
 
-    //팀 가입 신청
+    // 팀 가입 신청
     @ResponseBody
     @PostMapping("/teams/{teamId}/applications")
-    public ResponseEntity<String> createApplication(@PathVariable int teamId, @RequestParam int userId) {
+    public ResponseEntity<String> createApplication(@PathVariable int teamId,
+                                                    @SessionAttribute(name = SESSION_USER, required = false) User user) {
+        if (user == null) {
+            return ResponseEntity.status(401).body("로그인이 필요합니다.");
+        }
+
         try {
-            joinApplicationManager.createApplication(teamId, userId);
+            joinApplicationManager.createApplication(teamId, user.getUserId());
             return ResponseEntity.ok("가입 신청 완료");
         } catch (IllegalStateException e) {
             return ResponseEntity.status(409).body(e.getMessage());
@@ -96,7 +101,7 @@ public class JoinApplicationController {
         try {
             model.addAttribute("application",
                     joinApplicationManager.getApplicationDetail(teamId, applicationId, user.getUserId()));
-        } catch (IllegalStateException e) {
+        } catch (NotTeamLeaderException | IllegalStateException e) {
             return "redirect:/teams/" + teamId;
         }
 
