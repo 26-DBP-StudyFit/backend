@@ -136,15 +136,29 @@ public class TeamMemberDAO {
     }
 
     /** 해당 회원이 지정한 팀의 팀장인지 확인한다. */
-    public boolean isLeader(Connection conn, long teamId, long memberId)
-            throws SQLException {
+    public boolean isLeader(Integer teamId, Integer memberId) {
+        JDBCUtil jdbcUtil = new JDBCUtil();   // 메서드마다 새로 만든다
         String sql = "SELECT COUNT(*) FROM team_member " +
                 "WHERE team_id = ? AND member_id = ? AND role = 'LEADER'";
-        return countMembership(conn, sql, teamId, memberId) > 0;
+        jdbcUtil.setSqlAndParameters(sql, new Object[] {teamId, memberId});
+        try {
+            ResultSet rs = jdbcUtil.executeQuery();
+            if (rs == null) {   // JDBCUtil.executeQuery는 실패하면 null을 반환한다
+                throw new IllegalStateException("팀장 여부 조회 중 DB 오류가 발생했습니다.");
+            }
+            return rs.next() && rs.getInt(1) > 0;
+        } catch (IllegalStateException e) {
+            throw e;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new IllegalStateException("팀장 여부 조회 중 DB 오류가 발생했습니다.", e);
+        } finally {
+            jdbcUtil.close();
+        }
     }
 
     /** 팀장을 포함한 현재 팀 인원수를 반환한다. */
-    public int countByTeamId(Connection conn, long teamId) throws SQLException {
+    public int countByTeamId(Connection conn, Integer teamId) throws SQLException {
         String sql = "SELECT COUNT(*) FROM team_member WHERE team_id = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setLong(1, teamId);

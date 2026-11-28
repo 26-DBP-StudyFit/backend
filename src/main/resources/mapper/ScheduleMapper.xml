@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.DBP.StudyFit.dao.TeamScheduleDAO">
+
+    <resultMap id="scheduleResultMap" type="com.DBP.StudyFit.dto.ScheduleDTO">
+        <id     property="scheduleId"     column="SCHEDULE_ID"/>
+        <result property="teamId"         column="TEAM_ID"/>
+        <result property="title"          column="TITLE"/>
+        <result property="startAt"        column="START_AT"/>
+        <result property="endAt"          column="END_AT"/>
+        <result property="location"       column="LOCATION"/>
+        <result property="scheduleType"   column="SCHEDULE_TYPE"/>
+        <result property="recurrenceRule" column="RECURRENCE_RULE"/>
+        <result property="createdAt"      column="CREATED_AT"/>
+    </resultMap>
+
+    <select id="findByTeamId" resultMap="scheduleResultMap">
+        SELECT SCHEDULE_ID, TEAM_ID, TITLE, START_AT, END_AT, LOCATION,
+               SCHEDULE_TYPE, RECURRENCE_RULE, CREATED_AT
+        FROM TEAM_SCHEDULE
+        WHERE TEAM_ID = #{teamId}
+        ORDER BY START_AT
+    </select>
+
+    <insert id="insert" parameterType="com.DBP.StudyFit.dto.ScheduleDTO">
+        <selectKey keyProperty="scheduleId" resultType="long" order="BEFORE">
+            SELECT SEQ_TEAM_SCHEDULE.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO TEAM_SCHEDULE (SCHEDULE_ID, TEAM_ID, TITLE, START_AT, END_AT, LOCATION,
+        SCHEDULE_TYPE, RECURRENCE_RULE)
+        VALUES (#{scheduleId}, #{teamId}, #{title}, #{startAt}, #{endAt},
+        #{location, jdbcType=VARCHAR}, #{scheduleType},
+        #{recurrenceRule, jdbcType=VARCHAR})
+    </insert>
+
+</mapper>
