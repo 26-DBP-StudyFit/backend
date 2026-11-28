@@ -42,25 +42,23 @@ public class JoinApplicationManager {
     public void approveApplication(int teamId, int applicationId, int userId)
             throws NotTeamLeaderException {
 
-        JoinApplication app = getApplicationDetail(teamId, applicationId, userId);
-        if (app.getStatus() != JoinApplicationStatus.PENDING)
+        // 팀장인 지 확인도 함
+        JoinApplication application = getApplicationDetail(teamId, applicationId, userId);
+        if (application.getStatus() != JoinApplicationStatus.PENDING)
             throw new IllegalStateException("이미 처리된 신청입니다.");
 
         try (Connection conn = new JDBCUtil().getConnection()) {
             conn.setAutoCommit(false);
             try {
-                if (!teamMemberDAO.isLeader(conn, teamId, userId))
-                    throw new NotTeamLeaderException("팀장만 승인할 수 있습니다.");
-
                 int updated = joinApplicationDAO.updateStatus(conn, applicationId,
                         JoinApplicationStatus.APPROVED.getCode());
                 if (updated == 0)
                     throw new IllegalStateException("이미 처리된 신청입니다.");
 
-                teamMemberDAO.insertMember(conn, teamId, app.getUserId());
+                teamMemberDAO.insertMember(conn, teamId, application.getUserId());
                 conn.commit();   // 둘 다 성공 → 반영
 
-            } catch (NotTeamLeaderException | IllegalStateException e) {
+            } catch (IllegalStateException e) {
                 conn.rollback();
                 throw e;         // 컨트롤러가 받아서 메시지 표시
             } catch (SQLException e) {
