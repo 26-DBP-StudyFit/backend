@@ -123,6 +123,7 @@ public class UserController {
         if (!profileManager.hasProfile(user.getUserId())) {
             return "redirect:/profile/survey";
         }
+        // TODO: "/" 매핑(메인 화면)이 아직 없어 로그인 후 404 발생. 홈화면 주소 맞추기
         return "redirect:/";
     }
 
