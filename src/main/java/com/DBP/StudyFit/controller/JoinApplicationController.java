@@ -107,4 +107,22 @@ public class JoinApplicationController {
 
         return "team/applicationDetail";
     }
+
+    // 내 가입 신청 결과 조회
+    @GetMapping("/my/applications")
+    public String myApplications(@SessionAttribute(name = SESSION_USER, required = false) User user,
+                                 Model model) {
+        if (user == null) {
+            return "redirect:/user/login";
+        }
+
+        try {
+            model.addAttribute("applications",
+                    joinApplicationManager.getMyApplications(user.getUserId()));
+        } catch (IllegalStateException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+        }
+
+        return "my/applicationList";
+    }
 }
