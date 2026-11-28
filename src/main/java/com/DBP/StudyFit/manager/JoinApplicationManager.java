@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 @Service
 public class JoinApplicationManager {
@@ -91,5 +92,13 @@ public class JoinApplicationManager {
             throw new NotTeamLeaderException("팀장만 가입 신청을 확인·처리할 수 있습니다.");
 
         return application;
+    }
+
+    // 내 가입 신청 결과 조회 (신청자)
+    public List<JoinApplication> getMyApplications(int userId) {
+        List<JoinApplication> list = joinApplicationDAO.findApplicationsByApplicantId(userId);
+        if (list == null)   // DAO는 DB 오류 시 null을 반환
+            throw new IllegalStateException("가입 신청 내역 조회 중 오류가 발생했습니다.");
+        return list;
     }
 }
