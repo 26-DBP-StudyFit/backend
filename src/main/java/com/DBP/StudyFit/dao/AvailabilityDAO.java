@@ -21,7 +21,6 @@ import java.util.List;
  *
  * 팀 구성원(team_member)은 (team_id, member_id)로 찾는다.
  * JDBCUtil 은 메서드마다 새로 만든다 (싱글톤 DAO 의 필드에 두지 않는다).
- * 실제 Oracle 환경에서는 실행하지 않았으므로 적용 전 SQL 검증이 필요하다.
  */
 @Repository
 public class AvailabilityDAO {
@@ -46,6 +45,40 @@ public class AvailabilityDAO {
             List<Availability> result = new ArrayList<>();
             TeamMember member = new TeamMember((int) teamId, userId, null, null);
             while (rs.next()) {
+                result.add(new Availability(
+                        rs.getLong("availability_id"),
+                        member,
+                        DayOfWeek.of(rs.getInt("day_of_week")),
+                        toLocalTime(rs.getInt("start_minute")),
+                        toLocalTime(rs.getInt("end_minute"))));
+            }
+            return result;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            jdbcUtil.close();
+        }
+        return null;
+    }
+
+    public List<Availability> findByTeam(long teamId) {
+        JDBCUtil jdbcUtil = new JDBCUtil();
+        StringBuffer query = new StringBuffer();
+        query.append("SELECT a.availability_id, tm.member_id, a.day_of_week, a.start_minute, a.end_minute ");
+        query.append("FROM availability a ");
+        query.append("JOIN team_member tm ON tm.team_member_id = a.team_member_id ");
+        query.append("WHERE tm.team_id = ? ");
+        query.append("ORDER BY tm.member_id, a.day_of_week, a.start_minute");
+        jdbcUtil.setSqlAndParameters(query.toString(), new Object[] {teamId});
+
+        try {
+            ResultSet rs = jdbcUtil.executeQuery();
+            if (rs == null) {          // JDBCUtil 은 질의 실패 시 null 을 반환한다
+                return null;
+            }
+            List<Availability> result = new ArrayList<>();
+            while (rs.next()) {
+                TeamMember member = new TeamMember((int) teamId, rs.getLong("member_id"), null, null);
                 result.add(new Availability(
                         rs.getLong("availability_id"),
                         member,

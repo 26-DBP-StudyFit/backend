@@ -185,7 +185,7 @@ public class TeamMemberDAO {
         }
     }
 
-    /** domain.TeamMember 필드 타입(Integer teamId, Long memberId, TeamMemberRole role)에 맞춰 매핑한다. */
+    // domain.TeamMember 필드 타입(Integer teamId, Long memberId, TeamMemberRole role)에 맞춰 매핑한다.
     private TeamMember mapTeamMember(ResultSet rs) throws SQLException {
         return new TeamMember(
                 rs.getInt("team_id"),
@@ -199,7 +199,7 @@ public class TeamMemberDAO {
         return value == null ? null : value.toLocalDateTime();
     }
 
-    /** JDBCUtil 방식: 구성원이면 소속 정보를, 아니면(또는 DB 오류면) Optional.empty() 를 반환한다. */
+    // 구성원이면 소속 정보를, 아니면(또는 DB 오류면) Optional.empty() 를 반환한다.
     public Optional<TeamMember> findByTeamIdAndMemberId(long teamId, long memberId) {
         JDBCUtil jdbcUtil = new JDBCUtil();   // 메서드마다 새로 만든다 (싱글톤 DAO 필드에 두지 않는다)
         String sql = "SELECT team_id, member_id, role, joined_at " +
@@ -216,5 +216,30 @@ public class TeamMemberDAO {
             jdbcUtil.close();
         }
         return Optional.empty();
+    }
+
+
+     // 팀 구성원의 회원 ID 목록을 가입 순으로 조회한다. (공통 가능 시간의 미등록 팀원 판별용)
+     // 구성원이 없으면 빈 리스트, DB 오류가 나면 null 을 반환한다.
+    public List<Long> findMemberIdsByTeamId(long teamId) {
+        JDBCUtil jdbcUtil = new JDBCUtil();   // 메서드마다 새로 만든다
+        String sql = "SELECT member_id FROM team_member WHERE team_id = ? ORDER BY joined_at, member_id";
+        jdbcUtil.setSqlAndParameters(sql, new Object[] {teamId});
+        try {
+            ResultSet rs = jdbcUtil.executeQuery();
+            if (rs == null) {   // JDBCUtil.executeQuery는 실패하면 null을 반환한다
+                return null;
+            }
+            List<Long> memberIds = new ArrayList<>();
+            while (rs.next()) {
+                memberIds.add(rs.getLong("member_id"));
+            }
+            return memberIds;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            jdbcUtil.close();
+        }
+        return null;
     }
 }
