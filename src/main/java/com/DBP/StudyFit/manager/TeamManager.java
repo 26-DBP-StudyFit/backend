@@ -26,7 +26,7 @@ public class TeamManager {
     }
 
     /** 해당 팀의 구성원이면 소속 정보를 돌려주고, 아니면 NotTeamMemberException 을 던진다. */
-    public TeamMember validateMember(long teamId, long userId) {
+    public TeamMember validateMember(Integer teamId, long userId) {
         return teamMemberDAO.findByTeamIdAndMemberId(teamId, userId)
                 .orElseThrow(() -> new NotTeamMemberException("해당 팀의 구성원만 이용할 수 있습니다."));
     }

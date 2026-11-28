@@ -15,12 +15,16 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 
 import com.DBP.StudyFit.dao.AvailabilityDAO;
+import com.DBP.StudyFit.dao.TeamMemberDAO;
 import com.DBP.StudyFit.domain.Availability;
+import com.DBP.StudyFit.domain.CommonAvailabilityStatus;
+import com.DBP.StudyFit.domain.CommonTimeSlot;
 import com.DBP.StudyFit.dto.AvailabilityForm;
 import com.DBP.StudyFit.dto.AvailabilityInput;
+import com.DBP.StudyFit.dto.CommonAvailabilityResult;
 
 /**
- * 활동 가능 시간 조회·저장 (FR-D-01).
+ * 활동 가능 시간 조회·저장 (FR-D-01), 팀 공통 가능 시간 계산 (FR-D-02).
  *
  * 입력 오류 키 규칙 (View 가 이 키로 오류를 찾는다):
  *   slots                 : 목록 전체 오류 (개수 초과)
@@ -38,10 +42,14 @@ public class AvailabilityManager {
             DateTimeFormatter.ofPattern("HH:mm").withResolverStyle(ResolverStyle.STRICT);
     private static final DateTimeFormatter OUTPUT_TIME = DateTimeFormatter.ofPattern("HH:mm");
 
-    private final AvailabilityDAO availabilityDAO;
+    static final String MSG_NO_COMMON_TIME = "공통 가능 시간이 없습니다.";
 
-    public AvailabilityManager(AvailabilityDAO availabilityDAO) {
+    private final AvailabilityDAO availabilityDAO;
+    private final TeamMemberDAO teamMemberDAO;
+
+    public AvailabilityManager(AvailabilityDAO availabilityDAO, TeamMemberDAO teamMemberDAO) {
         this.availabilityDAO = availabilityDAO;
+        this.teamMemberDAO = teamMemberDAO;
     }
 
     /**
@@ -49,7 +57,7 @@ public class AvailabilityManager {
      *
      * @throws IllegalStateException DAO 가 DB 오류로 null 을 돌려준 경우
      */
-    public AvailabilityForm getAvailability(long teamId, long userId) {
+    public AvailabilityForm getAvailability(Integer teamId, long userId) {
         List<Availability> saved = availabilityDAO.findByTeamAndUser(teamId, userId);
         if (saved == null) {
             throw new IllegalStateException("활동 가능 시간 조회에 실패했습니다.");
@@ -76,7 +84,7 @@ public class AvailabilityManager {
      * @return 입력 오류 맵. 비어 있으면 저장 성공. 오류가 있으면 DAO 를 호출하지 않았다.
      * @throws IllegalStateException DAO 가 저장 실패(false)를 돌려준 경우 (이미 롤백된 상태)
      */
-    public Map<String, String> saveAvailability(long teamId, long userId, List<AvailabilityInput> inputs) {
+    public Map<String, String> saveAvailability(Integer teamId, long userId, List<AvailabilityInput> inputs) {
         Map<String, String> errors = new LinkedHashMap<>();
         List<Availability> slots = validateAndConvert(inputs, errors);
         if (!errors.isEmpty()) {
@@ -87,6 +95,101 @@ public class AvailabilityManager {
             throw new IllegalStateException("활동 가능 시간 저장에 실패했습니다.");
         }
         return errors;
+    }
+
+    // ---------------------------------------------------------------- 공통 가능 시간 (FR-D-02)
+
+    /**
+     * 팀 전원의 활동 가능 시간의 교집합을 요일별로 계산한다.
+     * 팀원 여부 확인(TeamManager.validateMember)은 호출하는 Controller 에서 한다.
+     *
+     * AVAILABLE      : 전원이 등록했고 교집합이 있다. commonTimeSlots 에 (요일, 시작 순) 교집합.
+     * NO_COMMON_TIME : 전원이 등록했지만 교집합이 없다. 두 목록 모두 빈 목록.
+     * INCOMPLETE     : 가능 시간을 등록하지 않은 팀원이 있다. 공통 시간은 확정하지 않고
+     *                  commonTimeSlots 는 빈 목록, missingMemberIds 에 미등록 팀원.
+     * 맞닿는 구간(9-10, 10-11)은 하나로 합쳐서 돌려준다.
+     *
+     * @throws IllegalStateException DAO 가 DB 오류로 null 을 돌려준 경우
+     */
+    public CommonAvailabilityResult calculateCommonAvailability(Integer teamId) {
+        List<Long> memberIds = teamMemberDAO.findMemberIdsByTeamId(teamId);
+        if (memberIds == null) {
+            throw new IllegalStateException("팀원 조회에 실패했습니다.");
+        }
+        List<Availability> saved = availabilityDAO.findByTeam(teamId);
+        if (saved == null) {
+            throw new IllegalStateException("활동 가능 시간 조회에 실패했습니다.");
+        }
+
+        // 팀원별 가능 시간 (등록하지 않은 팀원은 키가 없다)
+        Map<Long, List<CommonTimeSlot>> slotsByMember = new LinkedHashMap<>();
+        for (Availability a : saved) {
+            slotsByMember
+                    .computeIfAbsent(a.getTeamMember().getMemberId(), k -> new ArrayList<>())
+                    .add(CommonTimeSlot.from(a));
+        }
+
+        List<Long> missing = new ArrayList<>();
+        for (Long memberId : memberIds) {
+            if (!slotsByMember.containsKey(memberId)) {
+                missing.add(memberId);
+            }
+        }
+        if (!missing.isEmpty()) {
+            return new CommonAvailabilityResult(teamId, new ArrayList<>(), missing,
+                    CommonAvailabilityStatus.INCOMPLETE,
+                    "가능 시간을 등록하지 않은 팀원이 있어 공통 가능 시간을 확정할 수 없습니다. (미등록 "
+                            + missing.size() + "명)");
+        }
+
+        // 팀원 한 명씩 교집합을 좁혀 간다. 도중에 비면 더 계산할 필요가 없다.
+        List<CommonTimeSlot> common = null;
+        for (Long memberId : memberIds) {
+            List<CommonTimeSlot> mine = mergeAdjacent(slotsByMember.get(memberId));
+            common = (common == null) ? mine : intersect(common, mine);
+            if (common.isEmpty()) {
+                break;
+            }
+        }
+
+        if (common == null || common.isEmpty()) {   // common == null: 팀원이 한 명도 없는 경우
+            return new CommonAvailabilityResult(teamId, new ArrayList<>(), new ArrayList<>(),
+                    CommonAvailabilityStatus.NO_COMMON_TIME, MSG_NO_COMMON_TIME);
+        }
+        return new CommonAvailabilityResult(teamId, common, new ArrayList<>(),
+                CommonAvailabilityStatus.AVAILABLE, null);
+    }
+
+    /** 두 목록의 모든 구간 쌍에서 교집합을 모아 (요일, 시작 순)으로 정리한다. */
+    private static List<CommonTimeSlot> intersect(List<CommonTimeSlot> a, List<CommonTimeSlot> b) {
+        List<CommonTimeSlot> result = new ArrayList<>();
+        for (CommonTimeSlot x : a) {
+            for (CommonTimeSlot y : b) {
+                CommonTimeSlot overlap = x.intersect(y);
+                if (overlap != null) {
+                    result.add(overlap);
+                }
+            }
+        }
+        return mergeAdjacent(result);
+    }
+
+    /** (요일, 시작 순)으로 정렬하고, 같은 요일에서 겹치거나 맞닿은 구간은 하나로 합친다. */
+    private static List<CommonTimeSlot> mergeAdjacent(List<CommonTimeSlot> slots) {
+        List<CommonTimeSlot> sorted = new ArrayList<>(slots);
+        sorted.sort(Comparator.comparing(CommonTimeSlot::getDayOfWeek)
+                .thenComparing(CommonTimeSlot::getStartTime));
+
+        List<CommonTimeSlot> merged = new ArrayList<>();
+        for (CommonTimeSlot slot : sorted) {
+            int last = merged.size() - 1;
+            if (last >= 0 && merged.get(last).canMergeWith(slot)) {
+                merged.set(last, merged.get(last).mergeWith(slot));
+            } else {
+                merged.add(slot);
+            }
+        }
+        return merged;
     }
 
     // ---------------------------------------------------------------- 검증
